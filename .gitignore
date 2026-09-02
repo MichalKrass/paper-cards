@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+playwright-report/
+test-results/
+artifacts/
+tmp/
+output/pdf/
+papers_list.txt
+src/generated/paper-index.json

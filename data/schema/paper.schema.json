@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://paper-cards.local/schema/paper.schema.json",
+  "title": "Paper card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "authors",
+    "publicationDate",
+    "year",
+    "sourceArticleIds",
+    "sources",
+    "evidenceLevel",
+    "status",
+    "oneLineSummary",
+    "task",
+    "problem",
+    "coreMethod",
+    "applicationScenarios",
+    "valuableInnovations",
+    "keyMetrics",
+    "tags",
+    "limitations",
+    "followUpQuestions",
+    "addedAt",
+    "updatedAt",
+    "schemaVersion"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$" },
+    "title": { "type": "string", "minLength": 2 },
+    "titleZh": { "type": "string", "minLength": 2 },
+    "authors": { "$ref": "#/definitions/stringList" },
+    "institutions": { "$ref": "#/definitions/stringList" },
+    "publicationDate": { "type": "string", "format": "date" },
+    "year": { "type": "integer", "minimum": 1900, "maximum": 2100 },
+    "doi": { "type": "string", "minLength": 4 },
+    "arxivId": { "type": "string", "pattern": "^[0-9]{4}\\.[0-9]{4,5}$" },
+    "paperUrl": { "$ref": "#/definitions/httpsUrl" },
+    "codeUrl": { "$ref": "#/definitions/httpsUrl" },
+    "sourceArticleIds": { "$ref": "#/definitions/stringList" },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "url", "kind"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "url": { "$ref": "#/definitions/httpsUrl" },
+          "kind": { "enum": ["paper", "code", "project", "article"] }
+        }
+      }
+    },
+    "evidenceLevel": { "enum": ["fulltext", "abstract", "wechat_only", "mixed"] },
+    "status": { "enum": ["draft", "verified", "needs_review"] },
+    "oneLineSummary": { "type": "string", "minLength": 12 },
+    "task": { "type": "string", "minLength": 2 },
+    "applicationScenarios": { "$ref": "#/definitions/stringList" },
+    "problem": { "type": "string", "minLength": 10 },
+    "coreMethod": { "type": "string", "minLength": 10 },
+    "valuableInnovations": { "$ref": "#/definitions/stringList" },
+    "keyMetrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "result", "baseline", "source"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "result": { "type": "string", "minLength": 1 },
+          "baseline": { "type": "string", "minLength": 1 },
+          "source": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "tags": { "$ref": "#/definitions/stringList" },
+    "modelStructure": { "type": "string" },
+    "trainingStrategy": { "type": "string" },
+    "dataRecipe": { "type": "string" },
+    "trainingDatasets": { "$ref": "#/definitions/stringList" },
+    "testDatasets": { "$ref": "#/definitions/stringList" },
+    "changesFromPrevious": { "type": "string" },
+    "openSourceStatus": { "$ref": "#/definitions/judgement" },
+    "codeMaturity": { "$ref": "#/definitions/judgement" },
+    "reproductionDifficulty": { "$ref": "#/definitions/judgement" },
+    "computeRequirement": { "$ref": "#/definitions/judgement" },
+    "industrialValue": { "$ref": "#/definitions/judgement" },
+    "commercialValue": { "$ref": "#/definitions/judgement" },
+    "limitations": { "$ref": "#/definitions/stringList" },
+    "followUpQuestions": { "$ref": "#/definitions/stringList" },
+    "addedAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "schemaVersion": { "const": "1.0.0" },
+    "generatedBy": { "type": "string" }
+  },
+  "definitions": {
+    "stringList": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "httpsUrl": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "judgement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "reason"],
+      "properties": {
+        "level": { "enum": ["low", "medium", "high", "unknown"] },
+        "reason": { "type": "string", "minLength": 4 }
+      }
+    }
+  }
+}

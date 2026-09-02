@@ -1,0 +1,73 @@
+{
+  "id": "arxiv-2304.02643",
+  "title": "Segment Anything",
+  "titleZh": "分割一切",
+  "authors": [
+    "Alexander Kirillov",
+    "Eric Mintun",
+    "Nikhila Ravi",
+    "Hanzi Mao",
+    "Chloe Rolland",
+    "Laura Gustafson",
+    "Tete Xiao",
+    "Spencer Whitehead",
+    "Alexander C. Berg",
+    "Wan-Yen Lo",
+    "Piotr Dollár",
+    "Ross Girshick"
+  ],
+  "institutions": ["Meta AI Research"],
+  "publicationDate": "2023-04-05",
+  "year": 2023,
+  "doi": "10.48550/arXiv.2304.02643",
+  "arxivId": "2304.02643",
+  "paperUrl": "https://arxiv.org/abs/2304.02643",
+  "codeUrl": "https://github.com/facebookresearch/segment-anything",
+  "sourceArticleIds": [],
+  "sources": [
+    { "label": "arXiv 摘要与论文", "url": "https://arxiv.org/abs/2304.02643", "kind": "paper" },
+    { "label": "官方代码", "url": "https://github.com/facebookresearch/segment-anything", "kind": "code" },
+    { "label": "项目主页", "url": "https://segment-anything.com/", "kind": "project" }
+  ],
+  "evidenceLevel": "abstract",
+  "status": "verified",
+  "oneLineSummary": "把图像分割做成可提示的基础能力，用点、框或掩码在新分布上直接产生目标区域。",
+  "task": "图像分割",
+  "applicationScenarios": ["交互式抠图", "数据标注", "零样本迁移", "视觉工作流预处理"],
+  "problem": "传统分割模型通常围绕固定类别和数据集训练，换场景时需要重新标注与微调，难以作为通用视觉组件。",
+  "coreMethod": "构建可提示的分割模型 SAM，并把模型放入数据闭环，结合人工交互与模型辅助生成大规模掩码数据。",
+  "valuableInnovations": [
+    "将提示式接口作为统一分割任务，使同一模型能响应点、框和已有掩码。",
+    "用模型参与的数据引擎扩展到 SA-1B，为通用分割预训练提供规模基础。"
+  ],
+  "keyMetrics": [
+    { "name": "SA-1B 掩码规模", "result": "超过 10 亿个掩码", "baseline": "来自 1100 万张获许可且重视隐私的图像", "source": "arXiv 摘要" }
+  ],
+  "tags": ["Computer Vision", "Segmentation", "Foundation Model", "Zero-shot"],
+  "modelStructure": "图像编码器先计算图像嵌入；提示编码器接收点、框或掩码；轻量掩码解码器结合两者输出候选掩码。",
+  "trainingStrategy": "围绕可提示分割目标训练，并通过数据引擎分阶段引入人工与模型辅助标注；摘要未披露完整训练超参数。",
+  "dataRecipe": "SA-1B：约 1100 万张图像、超过 10 亿个掩码。",
+  "trainingDatasets": ["SA-1B"],
+  "testDatasets": ["论文中的多项分割基准；本卡片未逐表复核"],
+  "changesFromPrevious": "不再把分割限定为固定标签集合，而是用提示接口和大规模预训练统一多种下游使用方式。",
+  "openSourceStatus": { "level": "high", "reason": "官方发布模型代码、权重入口与 SA-1B 数据申请入口。" },
+  "codeMaturity": { "level": "high", "reason": "官方仓库提供推理示例、模型注册和导出说明。" },
+  "reproductionDifficulty": { "level": "medium", "reason": "推理门槛较低；从头训练和复建数据引擎成本很高。" },
+  "computeRequirement": { "level": "medium", "reason": "使用发布权重可单机推理；大规模训练所需算力未在摘要层面完整确认。" },
+  "industrialValue": { "level": "high", "reason": "统一分割接口可直接嵌入标注、编辑、质检和感知管线。" },
+  "commercialValue": { "level": "high", "reason": "能够减少定制分割模型和像素级标注的重复投入，但需评估特定领域精度。" },
+  "limitations": [
+    "摘要只证明多任务上的零样本表现，特定工业场景仍需独立评测。",
+    "精确边界、小目标、歧义提示和领域外图像可能需要额外处理。",
+    "从头复现 SA-1B 数据闭环并不现实。"
+  ],
+  "followUpQuestions": [
+    "不同领域中提示质量与掩码稳定性的关系如何？",
+    "轻量化版本能否在边缘设备上保持可用延迟与精度？",
+    "与检测、跟踪和多模态模型组合时，误差如何传递？"
+  ],
+  "addedAt": "2026-09-02T00:00:00.000Z",
+  "updatedAt": "2026-09-02T00:00:00.000Z",
+  "schemaVersion": "1.0.0",
+  "generatedBy": "人工核对 arXiv 摘要与官方项目链接"
+}

@@ -1,0 +1,46 @@
+---
+import type { Paper } from "../lib/types";
+
+interface Props {
+  paper: Paper;
+  index: number;
+}
+
+const { paper, index } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const statusLabel = paper.status === "verified" ? "已核验" : paper.status === "needs_review" ? "待复核" : "草稿";
+const evidenceLabel = {
+  fulltext: "全文",
+  abstract: "摘要",
+  wechat_only: "公众号",
+  mixed: "混合证据",
+}[paper.evidenceLevel];
+const primaryMetric = paper.keyMetrics[0];
+---
+
+<article class="paper-card" data-paper-id={paper.id}>
+  <div class="card-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</div>
+  <div class="card-meta">
+    <span>{paper.task}</span>
+    <span>{paper.year}</span>
+    <span class={`status status--${paper.status}`}>{statusLabel}</span>
+  </div>
+  <h2>
+    <a href={`${base}papers/${paper.id}/`}>{paper.titleZh ?? paper.title}</a>
+  </h2>
+  {paper.titleZh && <p class="english-title">{paper.title}</p>}
+  <p class="card-summary">{paper.oneLineSummary}</p>
+  {primaryMetric && (
+    <dl class="metric-strip">
+      <dt>{primaryMetric.name}</dt>
+      <dd>{primaryMetric.result}</dd>
+    </dl>
+  )}
+  <div class="tag-row" aria-label="论文标签">
+    {paper.tags.slice(0, 4).map((tag) => <span>{tag}</span>)}
+  </div>
+  <div class="card-footer">
+    <span>{evidenceLabel}证据</span>
+    <a href={`${base}papers/${paper.id}/`} aria-label={`查看《${paper.titleZh ?? paper.title}》详情`}>查看详情 <span aria-hidden="true">↗</span></a>
+  </div>
+</article>

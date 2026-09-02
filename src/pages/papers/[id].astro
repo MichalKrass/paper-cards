@@ -1,0 +1,151 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import JudgementBlock from "../../components/JudgementBlock.astro";
+import { papers } from "../../lib/data";
+import type { Paper } from "../../lib/types";
+
+export function getStaticPaths() {
+  return papers.map((paper) => ({ params: { id: paper.id }, props: { paper } }));
+}
+
+interface Props { paper: Paper }
+const { paper } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const displayTitle = paper.titleZh ?? paper.title;
+const evidenceLabel = { fulltext: "全文", abstract: "摘要", wechat_only: "公众号", mixed: "混合证据" }[paper.evidenceLevel];
+const statusLabel = paper.status === "verified" ? "已核验" : paper.status === "needs_review" ? "待复核" : "草稿";
+const unknown = "未确认";
+---
+
+<BaseLayout title={`${displayTitle} · Paper Cards`} description={paper.oneLineSummary} pageClass="detail-page">
+  <article class="paper-detail">
+    <nav class="breadcrumbs" aria-label="面包屑" data-print-hide>
+      <a href={base}>论文卡片</a><span aria-hidden="true">/</span><span>{paper.id}</span>
+    </nav>
+
+    <header class="detail-hero">
+      <div class="detail-kicker">
+        <span>{paper.task}</span><span>{paper.year}</span><span>{evidenceLabel}证据</span><span>{statusLabel}</span>
+      </div>
+      <p class="detail-id">{paper.id.toUpperCase()}</p>
+      <h1>{displayTitle}</h1>
+      {paper.titleZh && <p class="detail-title-en">{paper.title}</p>}
+      <p class="detail-deck">{paper.oneLineSummary}</p>
+      <div class="detail-byline">
+        <p><strong>作者</strong>{paper.authors.join("、")}</p>
+        <p><strong>机构</strong>{paper.institutions?.join("、") || unknown}</p>
+        <p><strong>发布</strong><time datetime={paper.publicationDate}>{paper.publicationDate}</time></p>
+      </div>
+      <div class="detail-actions" data-print-hide>
+        <button class="print-button" type="button" data-print-button>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"></path></svg>
+          导出 / 保存 PDF
+        </button>
+        {paper.paperUrl && <a class="secondary-action" href={paper.paperUrl} target="_blank" rel="noreferrer">打开原论文 ↗</a>}
+      </div>
+    </header>
+
+    <div class="detail-body">
+      <aside class="detail-toc" aria-label="本页目录" data-print-hide>
+        <p>IN THIS CARD</p>
+        <a href="#quick-read">快速判断</a>
+        <a href="#method">方法与训练</a>
+        <a href="#metrics">数据与指标</a>
+        <a href="#value">工程与价值</a>
+        <a href="#limits">局限与后续</a>
+        <a href="#sources">来源</a>
+      </aside>
+
+      <div class="detail-content">
+        <section id="quick-read" class="detail-section">
+          <p class="section-number">01 / QUICK READ</p>
+          <h2>快速判断</h2>
+          <div class="answer-block answer-block--problem">
+            <h3>它解决什么问题？</h3>
+            <p>{paper.problem}</p>
+          </div>
+          <div class="answer-block">
+            <h3>核心方法</h3>
+            <p>{paper.coreMethod}</p>
+          </div>
+          <div class="answer-block">
+            <h3>真正有价值的创新</h3>
+            {paper.valuableInnovations.length ? <ul>{paper.valuableInnovations.map((item) => <li>{item}</li>)}</ul> : <p class="unknown">{unknown}</p>}
+          </div>
+          <div class="application-strip">
+            <h3>适用场景</h3>
+            <ul>{paper.applicationScenarios.map((item) => <li>{item}</li>)}</ul>
+          </div>
+        </section>
+
+        <section id="method" class="detail-section">
+          <p class="section-number">02 / METHOD</p>
+          <h2>方法与训练</h2>
+          <dl class="fact-list">
+            <div><dt>模型结构</dt><dd>{paper.modelStructure || unknown}</dd></div>
+            <div><dt>训练策略</dt><dd>{paper.trainingStrategy || unknown}</dd></div>
+            <div><dt>数据配方</dt><dd>{paper.dataRecipe || unknown}</dd></div>
+            <div><dt>相对上一代</dt><dd>{paper.changesFromPrevious || unknown}</dd></div>
+          </dl>
+        </section>
+
+        <section id="metrics" class="detail-section">
+          <p class="section-number">03 / EVIDENCE</p>
+          <h2>数据与指标</h2>
+          <div class="dataset-columns">
+            <div><h3>训练数据</h3>{paper.trainingDatasets?.length ? <ul>{paper.trainingDatasets.map((item) => <li>{item}</li>)}</ul> : <p class="unknown">{unknown}</p>}</div>
+            <div><h3>测试数据</h3>{paper.testDatasets?.length ? <ul>{paper.testDatasets.map((item) => <li>{item}</li>)}</ul> : <p class="unknown">{unknown}</p>}</div>
+          </div>
+          {paper.keyMetrics.length ? (
+            <div class="metric-table-wrap">
+              <table>
+                <caption>论文卡片中已核对的主要指标</caption>
+                <thead><tr><th>指标</th><th>结果</th><th>对比 / 条件</th><th>证据</th></tr></thead>
+                <tbody>{paper.keyMetrics.map((metric) => <tr><th scope="row">{metric.name}</th><td>{metric.result}</td><td>{metric.baseline}</td><td>{metric.source}</td></tr>)}</tbody>
+              </table>
+            </div>
+          ) : <p class="unknown">主要指标尚未确认。</p>}
+        </section>
+
+        <section id="value" class="detail-section">
+          <p class="section-number">04 / DELIVERY</p>
+          <h2>工程与价值</h2>
+          <dl class="judgement-grid">
+            <JudgementBlock label="是否开源" value={paper.openSourceStatus} />
+            <JudgementBlock label="代码成熟度" value={paper.codeMaturity} />
+            <JudgementBlock label="复现难度" value={paper.reproductionDifficulty} />
+            <JudgementBlock label="算力需求" value={paper.computeRequirement} />
+            <JudgementBlock label="工业落地价值" value={paper.industrialValue} />
+            <JudgementBlock label="商业价值判断" value={paper.commercialValue} />
+          </dl>
+        </section>
+
+        <section id="limits" class="detail-section">
+          <p class="section-number">05 / OPEN QUESTIONS</p>
+          <h2>局限与后续</h2>
+          <div class="limit-columns">
+            <div><h3>已知局限</h3>{paper.limitations.length ? <ol>{paper.limitations.map((item) => <li>{item}</li>)}</ol> : <p class="unknown">{unknown}</p>}</div>
+            <div><h3>值得继续关注</h3>{paper.followUpQuestions.length ? <ol>{paper.followUpQuestions.map((item) => <li>{item}</li>)}</ol> : <p class="unknown">{unknown}</p>}</div>
+          </div>
+        </section>
+
+        <section id="sources" class="detail-section source-section">
+          <p class="section-number">06 / SOURCES</p>
+          <h2>来源与维护</h2>
+          <ul class="source-list">
+            {paper.sources.map((source) => <li><span>{source.kind}</span><a href={source.url} target="_blank" rel="noreferrer">{source.label}<span aria-hidden="true">↗</span></a></li>)}
+          </ul>
+          <dl class="maintenance-list">
+            <div><dt>证据范围</dt><dd>{evidenceLabel}</dd></div>
+            <div><dt>最后更新</dt><dd>{paper.updatedAt.slice(0, 10)}</dd></div>
+            <div><dt>生成说明</dt><dd>{paper.generatedBy || unknown}</dd></div>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <script>
+    document.querySelector<HTMLButtonElement>("[data-print-button]")?.addEventListener("click", () => window.print());
+  </script>
+</BaseLayout>

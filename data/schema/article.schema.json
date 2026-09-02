@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://paper-cards.local/schema/article.schema.json",
+  "title": "Source article",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "originalUrl", "normalizedUrl", "linkedPaperIds", "accessStatus", "note", "addedAt", "schemaVersion"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^wechat-[0-9]+-[0-9]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "accountName": { "type": "string", "minLength": 1 },
+    "publicationDate": { "type": "string", "format": "date" },
+    "originalUrl": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "normalizedUrl": { "type": "string", "format": "uri", "pattern": "^https://" },
+    "linkedPaperIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "accessStatus": { "enum": ["available", "blocked", "removed", "needs_review"] },
+    "note": { "type": "string", "minLength": 4 },
+    "addedAt": { "type": "string", "format": "date-time" },
+    "schemaVersion": { "const": "1.0.0" }
+  }
+}

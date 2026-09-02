@@ -1,0 +1,72 @@
+{
+  "id": "arxiv-2303.05499",
+  "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+  "titleZh": "Grounding DINO：用语言接地预训练实现开放集目标检测",
+  "authors": [
+    "Shilong Liu",
+    "Zhaoyang Zeng",
+    "Tianhe Ren",
+    "Feng Li",
+    "Hao Zhang",
+    "Jie Yang",
+    "Qing Jiang",
+    "Chunyuan Li",
+    "Jianwei Yang",
+    "Hang Su",
+    "Jun Zhu",
+    "Lei Zhang"
+  ],
+  "publicationDate": "2023-03-09",
+  "year": 2023,
+  "doi": "10.48550/arXiv.2303.05499",
+  "arxivId": "2303.05499",
+  "paperUrl": "https://arxiv.org/abs/2303.05499",
+  "codeUrl": "https://github.com/IDEA-Research/GroundingDINO",
+  "sourceArticleIds": [],
+  "sources": [
+    { "label": "arXiv 摘要与论文", "url": "https://arxiv.org/abs/2303.05499", "kind": "paper" },
+    { "label": "官方代码", "url": "https://github.com/IDEA-Research/GroundingDINO", "kind": "code" }
+  ],
+  "evidenceLevel": "abstract",
+  "status": "verified",
+  "oneLineSummary": "把语言提示紧密融入 DINO 检测器，让模型按类别名或指代表达检测训练集合之外的物体。",
+  "task": "开放集目标检测",
+  "applicationScenarios": ["文本驱动检测", "开放词汇标注", "指代表达定位", "机器人感知", "视觉内容检索"],
+  "problem": "闭集检测器只能识别预定义类别，面对新概念或自然语言描述时难以泛化，也无法统一类别检测与指代表达定位。",
+  "coreMethod": "在 Transformer 检测器 DINO 上加入语言分支，通过特征增强器、语言引导的查询选择和跨模态解码器紧密融合视觉与文本。",
+  "valuableInnovations": [
+    "把闭集检测流程拆成三阶段，并在各阶段引入语言条件，而不是只在输出端做浅层对齐。",
+    "同时用新类别检测和指代表达理解评估开放集能力。"
+  ],
+  "keyMetrics": [
+    { "name": "COCO 零样本检测 AP", "result": "52.5 AP", "baseline": "未使用 COCO 训练数据", "source": "arXiv 摘要" },
+    { "name": "ODinW 零样本平均 AP", "result": "26.1 AP", "baseline": "摘要称达到当时新纪录", "source": "arXiv 摘要" }
+  ],
+  "tags": ["Computer Vision", "Object Detection", "Open-set", "Vision-Language", "Transformer"],
+  "modelStructure": "视觉主干与文本编码器提取两种模态特征，随后由特征增强器、语言引导查询选择和跨模态解码器完成融合与框预测。",
+  "trainingStrategy": "使用带语言接地信息的数据预训练，使检测查询与文本概念对齐；本卡片未逐项核对全文训练配方。",
+  "dataRecipe": "摘要未完整列出训练集构成；评估覆盖 COCO、LVIS、ODinW 与 RefCOCO/+/g。",
+  "trainingDatasets": ["语言接地预训练数据（摘要未完整列出）"],
+  "testDatasets": ["COCO", "LVIS", "ODinW", "RefCOCO", "RefCOCO+", "RefCOCOg"],
+  "changesFromPrevious": "从 DINO 的闭集检测扩展到文本条件的开放集检测，并用紧密跨模态融合替代仅依赖固定类别头。",
+  "openSourceStatus": { "level": "high", "reason": "官方仓库公开模型代码、配置与预训练权重入口。" },
+  "codeMaturity": { "level": "high", "reason": "官方实现包含推理示例、安装说明及多种集成用法。" },
+  "reproductionDifficulty": { "level": "medium", "reason": "使用权重较直接；完整训练仍依赖多源接地数据和较高算力。" },
+  "computeRequirement": { "level": "medium", "reason": "单模型推理可落地在 GPU；大规模接地预训练成本明显更高。" },
+  "industrialValue": { "level": "high", "reason": "文本即可定义检测目标，适合长尾对象、快速标注和可组合视觉管线。" },
+  "commercialValue": { "level": "high", "reason": "可减少为每个新增类别重新标注和训练检测器的周期，但需控制文本歧义和误检。" },
+  "limitations": [
+    "自然语言歧义、罕见概念和细粒度属性可能造成漏检或错误接地。",
+    "摘要中的零样本指标不能替代目标业务数据上的精度与延迟评估。",
+    "训练数据的完整构成和许可需要在实际使用前进一步核对。"
+  ],
+  "followUpQuestions": [
+    "开放词汇规模扩大后，置信度校准是否稳定？",
+    "与 SAM 组合进行自动标注时，检测误差会如何影响掩码质量？",
+    "边缘部署中可接受的文本编码与检测延迟是多少？"
+  ],
+  "addedAt": "2026-09-02T00:00:00.000Z",
+  "updatedAt": "2026-09-02T00:00:00.000Z",
+  "schemaVersion": "1.0.0",
+  "generatedBy": "人工核对 arXiv 摘要与官方代码链接"
+}

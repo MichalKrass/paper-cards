@@ -1,0 +1,106 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PaperCard from "../components/PaperCard.astro";
+import { papers, uniqueValues } from "../lib/data";
+import searchIndex from "../generated/paper-index.json";
+
+const tasks = uniqueValues(papers.map((paper) => paper.task));
+const years = [...new Set(papers.map((paper) => paper.year))].sort((a, b) => b - a);
+---
+
+<BaseLayout>
+  <section class="library-intro">
+    <div>
+      <p class="eyebrow">RESEARCH INDEX / 001</p>
+      <h1>先读卡片，<br /><em>再决定是否深读。</em></h1>
+    </div>
+    <div class="intro-copy">
+      <p>把论文压缩成可扫描的判断单元：问题、方法、指标、价值和局限都在同一套结构里。</p>
+      <dl class="library-stats" aria-label="论文库统计">
+        <div><dt>论文</dt><dd>{String(papers.length).padStart(2, "0")}</dd></div>
+        <div><dt>任务</dt><dd>{String(tasks.length).padStart(2, "0")}</dd></div>
+        <div><dt>版本</dt><dd>01</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="library-workspace" aria-labelledby="library-title">
+    <div class="workspace-heading">
+      <div>
+        <p class="section-number">01 / LIBRARY</p>
+        <h2 id="library-title">论文卡片</h2>
+      </div>
+      <p class="result-count" data-result-count aria-live="polite">显示 {papers.length} / {papers.length} 篇</p>
+    </div>
+
+    <form class="library-controls" data-library-controls aria-label="搜索和筛选论文">
+      <label class="search-field">
+        <span>搜索</span>
+        <span class="search-input-wrap">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg>
+          <input type="search" name="query" placeholder="标题、作者、任务或标签…" autocomplete="off" />
+        </span>
+      </label>
+      <label>
+        <span>任务</span>
+        <select name="task">
+          <option value="">全部任务</option>
+          {tasks.map((task) => <option value={task}>{task}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>年份</span>
+        <select name="year">
+          <option value="">全部年份</option>
+          {years.map((year) => <option value={year}>{year}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>状态</span>
+        <select name="status">
+          <option value="">全部状态</option>
+          <option value="verified">已核验</option>
+          <option value="needs_review">待复核</option>
+          <option value="draft">草稿</option>
+        </select>
+      </label>
+      <label>
+        <span>证据</span>
+        <select name="evidenceLevel">
+          <option value="">全部证据</option>
+          <option value="fulltext">全文</option>
+          <option value="abstract">摘要</option>
+          <option value="wechat_only">公众号</option>
+          <option value="mixed">混合</option>
+        </select>
+      </label>
+      <label>
+        <span>排序</span>
+        <select name="sort">
+          <option value="newest">发布日期：新 → 旧</option>
+          <option value="oldest">发布日期：旧 → 新</option>
+          <option value="title">英文标题：A → Z</option>
+        </select>
+      </label>
+      <button class="reset-button" type="button" data-reset-filters>清空筛选</button>
+    </form>
+
+    <p class="source-note"><span aria-hidden="true">※</span> 当前 3 条微信样例链接触发平台验证，已记录为待人工核验；演示卡片来自 arXiv 与官方代码仓库。</p>
+
+    <div class="paper-grid" data-paper-grid>
+      {papers.map((paper, index) => <PaperCard paper={paper} index={index} />)}
+    </div>
+
+    <div class="empty-state" data-empty-state hidden>
+      <p class="empty-mark" aria-hidden="true">∅</p>
+      <h3>没有匹配的论文</h3>
+      <p>换一个关键词，或清空筛选后重新浏览。</p>
+      <button type="button" data-reset-filters>清空筛选</button>
+    </div>
+  </section>
+
+  <script is:inline id="paper-search-index" type="application/json" set:html={JSON.stringify(searchIndex)}></script>
+  <script>
+    import "../scripts/library-client";
+  </script>
+</BaseLayout>

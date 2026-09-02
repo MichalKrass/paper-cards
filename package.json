@@ -1,0 +1,33 @@
+{
+  "name": "paper-cards",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run data:prepare && astro dev",
+    "data:validate": "node scripts/validate-data.mjs",
+    "data:index": "node scripts/build-search-index.mjs",
+    "data:prepare": "npm run data:validate && npm run data:index",
+    "check": "npm run data:prepare && astro check",
+    "test:unit": "vitest run tests/unit",
+    "build": "npm run data:prepare && astro build",
+    "preview": "astro preview",
+    "test:e2e": "npm run build && playwright test tests/e2e",
+    "test:visual": "npm run build && playwright test tests/visual",
+    "test:pdf": "npm run build && playwright test tests/pdf",
+    "verify": "npm run check && npm run test:unit && npm run build && playwright test tests/e2e"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.62.1",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "astro": "^7.2.10",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1"
+  }
+}
