@@ -40,4 +40,11 @@
 
 ## 部署验证
 
-待 GitHub 公开仓库和 Pages 授权后补充：Actions 运行链接、公开网址、首页状态、详情直链状态和刷新结果。
+- 公开仓库：<https://github.com/MichalKrass/paper-cards>
+- 首次部署工作流：<https://github.com/MichalKrass/paper-cards/actions/runs/33636582371>，结论 `success`。
+- Pages 来源：`workflow`；HTTPS 强制开启。
+- 公开网址：<https://michalkrass.github.io/paper-cards/>
+- 首页：HTTP 200。
+- 详情直链：`/paper-cards/papers/arxiv-2304.02643/`，HTTP 200。
+- 静态资源：抽查 `/paper-cards/_astro/data.B60H9I_J.css`，HTTP 200。
+- 真实浏览器：手机 390×844 下搜索 `Grounding DINO` 得到 1 / 3 篇；结果 href 正确；详情直达与刷新均为 HTTP 200；页面无整页横向溢出。
