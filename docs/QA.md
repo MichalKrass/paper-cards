@@ -55,7 +55,7 @@
 
 验收日期：2026-09-03（Asia/Shanghai）
 
-本节记录 `codex/frontend-v2` 的本地改版验收。尚未合并或部署，线上网站仍保持 MVP 版本。
+本节记录 `codex/frontend-v2` 的本地改版验收；发布结果见本节末尾。
 
 ## 数据与自动化
 
@@ -80,8 +80,10 @@
 
 视觉总览保存为 `artifacts/visual/qa-overview.jpg` 和 `artifacts/visual/qa-long-pages.jpg`，属于本地忽略产物。三层页面均无整页横向滚动；整体已统一为白色、浅灰、暖黄色、轻边框和无衬线风格。
 
-## V2 发布状态
+## V2 发布验证
 
 - PDF 导出、打印样式和 PDF 自动测试已退出 V2 范围；上方 MVP 记录仅作为历史保留。
-- 未执行 GitHub 推送、合并、Actions 或 Pages 部署。
-- 下一步必须先由用户确认本地视觉，再决定是否提交和部署；线上失败恢复策略不变。
+- GitHub Actions 工作流：<https://github.com/MichalKrass/paper-cards/actions/runs/33719140339>，`verify`、`build`、`deploy` 均为 `success`。
+- 公开网址：<https://michalkrass.github.io/paper-cards/>。
+- 首页、22 维论文卡片、章节精读和精读图片均返回 HTTP 200，并包含 V2 特征内容。
+- GitHub Pages 发布文件的 `Last-Modified` 为 2026-09-03 05:31:52 UTC。
