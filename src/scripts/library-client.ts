@@ -7,6 +7,8 @@ const resultCount = document.querySelector<HTMLElement>("[data-result-count]");
 const emptyState = document.querySelector<HTMLElement>("[data-empty-state]");
 const resetButtons = document.querySelectorAll<HTMLButtonElement>("[data-reset-filters]");
 const indexElement = document.querySelector<HTMLScriptElement>("#paper-search-index");
+const activeFilters = document.querySelector<HTMLElement>("[data-active-filters]");
+const filterSummary = document.querySelector<HTMLElement>("[data-filter-summary]");
 
 if (form && grid && resultCount && emptyState && indexElement) {
   const records = JSON.parse(indexElement.textContent ?? "[]") as SearchRecord[];
@@ -19,11 +21,43 @@ if (form && grid && resultCount && emptyState && indexElement) {
     return {
       query: String(data.get("query") ?? ""),
       task: String(data.get("task") ?? ""),
+      institution: String(data.get("institution") ?? ""),
       year: String(data.get("year") ?? ""),
       status: String(data.get("status") ?? ""),
       evidenceLevel: String(data.get("evidenceLevel") ?? ""),
       sort: String(data.get("sort") ?? "newest") as LibraryQuery["sort"],
     };
+  };
+
+  const renderActiveFilters = (query: LibraryQuery) => {
+    const labels: Array<[keyof LibraryQuery, string]> = [
+      ["query", "关键词"],
+      ["task", "领域"],
+      ["institution", "机构"],
+      ["year", "年份"],
+      ["status", "状态"],
+      ["evidenceLevel", "证据"],
+    ];
+    const entries = labels.filter(([key]) => Boolean(query[key]));
+
+    if (filterSummary) filterSummary.textContent = entries.length ? `筛选 · ${entries.length}` : "筛选";
+    if (!activeFilters) return;
+
+    activeFilters.replaceChildren();
+    activeFilters.hidden = entries.length === 0;
+    for (const [key, label] of entries) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "filter-chip";
+      button.dataset.filterKey = key;
+      button.setAttribute("aria-label", `移除${label}筛选：${query[key]}`);
+      button.append(document.createTextNode(`${label}：${query[key]} `));
+      const close = document.createElement("span");
+      close.setAttribute("aria-hidden", "true");
+      close.textContent = "×";
+      button.append(close);
+      activeFilters.append(button);
+    }
   };
 
   const updateUrl = (query: LibraryQuery) => {
@@ -51,6 +85,7 @@ if (form && grid && resultCount && emptyState && indexElement) {
     resultCount.textContent = `显示 ${visible.length} / ${records.length} 篇`;
     emptyState.hidden = visible.length !== 0;
     grid.hidden = visible.length === 0;
+    renderActiveFilters(query);
     updateUrl(query);
   };
 
@@ -65,6 +100,13 @@ if (form && grid && resultCount && emptyState && indexElement) {
   restoreFromUrl();
   form.addEventListener("input", render);
   form.addEventListener("change", render);
+  activeFilters?.addEventListener("click", (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-filter-key]");
+    if (!button) return;
+    const field = form.elements.namedItem(button.dataset.filterKey ?? "");
+    if (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) field.value = "";
+    render();
+  });
   resetButtons.forEach((button) => button.addEventListener("click", () => {
     form.reset();
     render();

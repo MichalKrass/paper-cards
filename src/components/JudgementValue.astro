@@ -1,0 +1,24 @@
+---
+import type { Judgement } from "../lib/types";
+
+interface Props {
+  value?: Judgement;
+}
+
+const { value } = Astro.props;
+const levelLabel = {
+  high: "高",
+  medium: "中",
+  low: "低",
+  unknown: "未知",
+};
+---
+
+{value ? (
+  <div class="judgement-value">
+    <span class={`level level--${value.level}`}>{levelLabel[value.level]}</span>
+    <p>{value.reason}</p>
+  </div>
+) : (
+  <p class="unknown">未确认</p>
+)}

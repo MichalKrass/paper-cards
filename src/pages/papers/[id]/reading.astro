@@ -1,0 +1,115 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { papers } from "../../../lib/data";
+import { readingNotes } from "../../../lib/reading-notes";
+import type { ReadingNote } from "../../../lib/reading-notes";
+
+export function getStaticPaths() {
+  return readingNotes.map((note) => ({
+    params: { id: note.frontmatter.paperId },
+    props: { note },
+  }));
+}
+
+interface Props {
+  note: ReadingNote;
+}
+
+const { note } = Astro.props;
+const paper = papers.find((item) => item.id === note.frontmatter.paperId);
+
+if (!paper) {
+  throw new Error(`Reading note references missing paper: ${note.frontmatter.paperId}`);
+}
+
+const base = import.meta.env.BASE_URL;
+const displayTitle = paper.titleZh ?? paper.title;
+const headings = note.getHeadings().filter((heading) => heading.depth === 2);
+const statusLabel = note.frontmatter.status === "complete" ? "全文精读" : "精读草稿";
+const Content = note.Content;
+---
+
+<BaseLayout
+  title={`${displayTitle} · 章节精读 · Paper Cards`}
+  description={note.frontmatter.description}
+  pageClass="reading-page"
+>
+  <article class="reading-shell">
+    <nav class="breadcrumbs" aria-label="面包屑">
+      <a href={base}>论文库</a>
+      <span aria-hidden="true">/</span>
+      <a href={`${base}papers/${paper.id}/`}>论文卡片</a>
+      <span aria-hidden="true">/</span>
+      <span>章节精读</span>
+    </nav>
+
+    <header class="reading-hero">
+      <div class="reading-kicker">
+        <span>{statusLabel}</span>
+        <span>{note.frontmatter.sourceVersion}</span>
+      </div>
+      <p class="reading-label">CHAPTER READING</p>
+      <h1>{paper.title}</h1>
+      {paper.titleZh && <p class="reading-title-zh">{paper.titleZh}</p>}
+      <p class="reading-description">{note.frontmatter.description}</p>
+
+      <dl class="reading-meta">
+        <div><dt>依据</dt><dd>论文全文</dd></div>
+        <div><dt>章节</dt><dd>{headings.length} 个</dd></div>
+        <div><dt>整理日期</dt><dd>{note.frontmatter.generatedAt}</dd></div>
+      </dl>
+
+      <div class="reading-actions">
+        <a class="primary-action" href={`${base}papers/${paper.id}/`}>返回论文卡片</a>
+        <a class="secondary-action" href={note.frontmatter.sourceUrl} target="_blank" rel="noreferrer">打开原论文 ↗</a>
+      </div>
+    </header>
+
+    <details class="reading-toc-mobile">
+      <summary>章节目录 <span aria-hidden="true">＋</span></summary>
+      <nav aria-label="章节目录">
+        {headings.map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}
+      </nav>
+    </details>
+
+    <div class="reading-layout">
+      <aside class="reading-toc" aria-label="章节目录">
+        <p>章节目录</p>
+        <nav>
+          {headings.map((heading, index) => (
+            <a href={`#${heading.slug}`}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              {heading.text}
+            </a>
+          ))}
+        </nav>
+      </aside>
+
+      <div class="reading-main">
+        {note.frontmatter.figure && (
+          <figure class="reading-figure">
+            <img
+              src={`${base}${note.frontmatter.figure.src}`}
+              alt={note.frontmatter.figure.alt}
+              loading="lazy"
+            />
+            <figcaption>
+              <strong>{note.frontmatter.figure.sourceLabel}</strong>
+              <span>{note.frontmatter.figure.caption}</span>
+              <a href={note.frontmatter.figure.sourceUrl} target="_blank" rel="noreferrer">查看原图 ↗</a>
+            </figcaption>
+          </figure>
+        )}
+
+        <section class="reading-prose" aria-label="论文章节总结">
+          <Content />
+        </section>
+
+        <footer class="reading-source">
+          <p>本页为结构化阅读笔记，不替代原论文。技术细节和数值结论请以原文为准。</p>
+          <a href={note.frontmatter.sourceUrl} target="_blank" rel="noreferrer">查看 {note.frontmatter.sourceVersion} ↗</a>
+        </footer>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

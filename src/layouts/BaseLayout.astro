@@ -9,7 +9,7 @@ interface Props {
 
 const {
   title = "Paper Cards · 论文卡片库",
-  description = "简洁、可检索、可导出 PDF 的个人论文积累知识库。",
+  description = "支持速览、结构化卡片与章节精读的个人论文知识库。",
   pageClass = "",
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
@@ -22,7 +22,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f3f0e8" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="canonical" href={canonical} />
     <title>{title}</title>
   </head>
@@ -33,17 +33,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <span class="brand-mark" aria-hidden="true">P</span>
         <span>
           <strong>Paper Cards</strong>
-          <small>个人论文索引</small>
+          <small>Research index</small>
         </span>
       </a>
-      <p class="header-note">READ LESS · KNOW MORE</p>
+      <p class="header-note">速览 · 卡片 · 精读</p>
     </header>
     <main id="main-content">
       <slot />
     </main>
     <footer class="site-footer" data-print-hide>
       <p>数据与网站同仓库维护 · 每次更新均经过校验与构建</p>
-      <p>Paper Cards / MVP 01</p>
+      <p>Paper Cards / V2</p>
     </footer>
   </body>
 </html>

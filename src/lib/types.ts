@@ -68,6 +68,7 @@ export interface SearchRecord {
   id: string;
   searchText: string;
   task: string;
+  institutions: string[];
   year: number;
   status: ReviewStatus;
   evidenceLevel: EvidenceLevel;
@@ -78,6 +79,7 @@ export interface SearchRecord {
 export interface LibraryQuery {
   query?: string;
   task?: string;
+  institution?: string;
   year?: string;
   status?: string;
   evidenceLevel?: string;

@@ -8,6 +8,7 @@ export function matchesPaper(paper: SearchRecord, query: LibraryQuery): boolean 
   const normalizedQuery = normalizeText(query.query ?? "");
   if (normalizedQuery && !paper.searchText.includes(normalizedQuery)) return false;
   if (query.task && paper.task !== query.task) return false;
+  if (query.institution && !paper.institutions.includes(query.institution)) return false;
   if (query.year && String(paper.year) !== query.year) return false;
   if (query.status && paper.status !== query.status) return false;
   if (query.evidenceLevel && paper.evidenceLevel !== query.evidenceLevel) return false;

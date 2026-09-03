@@ -9,38 +9,36 @@ interface Props {
 const { paper, index } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const statusLabel = paper.status === "verified" ? "已核验" : paper.status === "needs_review" ? "待复核" : "草稿";
-const evidenceLabel = {
-  fulltext: "全文",
-  abstract: "摘要",
-  wechat_only: "公众号",
-  mixed: "混合证据",
-}[paper.evidenceLevel];
-const primaryMetric = paper.keyMetrics[0];
+const institutionLabel = paper.institutions?.length
+  ? `${paper.institutions.slice(0, 2).join(" · ")}${paper.institutions.length > 2 ? " 等" : ""}`
+  : "机构未确认";
+const secondaryFields = paper.tags.filter((tag) => tag !== paper.task).slice(0, 2);
 ---
 
-<article class="paper-card" data-paper-id={paper.id}>
-  <div class="card-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</div>
-  <div class="card-meta">
-    <span>{paper.task}</span>
-    <span>{paper.year}</span>
-    <span class={`status status--${paper.status}`}>{statusLabel}</span>
-  </div>
-  <h2>
-    <a href={`${base}papers/${paper.id}/`}>{paper.titleZh ?? paper.title}</a>
-  </h2>
-  {paper.titleZh && <p class="english-title">{paper.title}</p>}
-  <p class="card-summary">{paper.oneLineSummary}</p>
-  {primaryMetric && (
-    <dl class="metric-strip">
-      <dt>{primaryMetric.name}</dt>
-      <dd>{primaryMetric.result}</dd>
-    </dl>
-  )}
-  <div class="tag-row" aria-label="论文标签">
-    {paper.tags.slice(0, 4).map((tag) => <span>{tag}</span>)}
-  </div>
-  <div class="card-footer">
-    <span>{evidenceLabel}证据</span>
-    <a href={`${base}papers/${paper.id}/`} aria-label={`查看《${paper.titleZh ?? paper.title}》详情`}>查看详情 <span aria-hidden="true">↗</span></a>
-  </div>
-</article>
+<a
+  class="paper-card"
+  data-paper-id={paper.id}
+  data-paper-index={index}
+  href={`${base}papers/${paper.id}/`}
+  aria-label={`查看《${paper.title}》论文卡片`}
+>
+  <article>
+    <div class="card-topline">
+      <div class="card-fields" aria-label="论文标签">
+        <span class="field-primary">{paper.task}</span>
+        {secondaryFields.map((field) => <span>{field}</span>)}
+      </div>
+      <time datetime={paper.publicationDate}>{paper.publicationDate}</time>
+    </div>
+
+    <h2>{paper.title}</h2>
+    {paper.titleZh && <p class="card-title-zh">{paper.titleZh}</p>}
+    <p class="card-institution">{institutionLabel}</p>
+    <p class="card-summary">{paper.oneLineSummary}</p>
+
+    <div class="card-bottomline">
+      {paper.status !== "verified" ? <span class={`review-note review-note--${paper.status}`}>{statusLabel}</span> : <span />}
+      <span class="card-link-text">阅读论文卡片 <span aria-hidden="true">→</span></span>
+    </div>
+  </article>
+</a>

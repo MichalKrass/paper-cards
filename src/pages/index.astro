@@ -5,87 +5,103 @@ import { papers, uniqueValues } from "../lib/data";
 import searchIndex from "../generated/paper-index.json";
 
 const tasks = uniqueValues(papers.map((paper) => paper.task));
+const institutions = uniqueValues(papers.flatMap((paper) => paper.institutions ?? []));
 const years = [...new Set(papers.map((paper) => paper.year))].sort((a, b) => b - a);
 ---
 
 <BaseLayout>
   <section class="library-intro">
-    <div>
-      <p class="eyebrow">RESEARCH INDEX / 001</p>
-      <h1>先读卡片，<br /><em>再决定是否深读。</em></h1>
+    <div class="intro-heading">
+      <p class="eyebrow">PERSONAL RESEARCH INDEX</p>
+      <h1>论文库</h1>
+      <p>先形成第一印象，再进入结构化卡片和章节精读。</p>
     </div>
-    <div class="intro-copy">
-      <p>把论文压缩成可扫描的判断单元：问题、方法、指标、价值和局限都在同一套结构里。</p>
-      <dl class="library-stats" aria-label="论文库统计">
-        <div><dt>论文</dt><dd>{String(papers.length).padStart(2, "0")}</dd></div>
-        <div><dt>任务</dt><dd>{String(tasks.length).padStart(2, "0")}</dd></div>
-        <div><dt>版本</dt><dd>01</dd></div>
-      </dl>
-    </div>
+    <dl class="library-stats" aria-label="论文库统计">
+      <div><dt>论文</dt><dd>{papers.length}</dd></div>
+      <div><dt>领域</dt><dd>{tasks.length}</dd></div>
+      <div><dt>更新</dt><dd>{papers[0]?.updatedAt.slice(0, 10) ?? "—"}</dd></div>
+    </dl>
   </section>
 
   <section class="library-workspace" aria-labelledby="library-title">
     <div class="workspace-heading">
-      <div>
-        <p class="section-number">01 / LIBRARY</p>
-        <h2 id="library-title">论文卡片</h2>
-      </div>
+      <h2 id="library-title">最新论文</h2>
       <p class="result-count" data-result-count aria-live="polite">显示 {papers.length} / {papers.length} 篇</p>
     </div>
 
     <form class="library-controls" data-library-controls aria-label="搜索和筛选论文">
       <label class="search-field">
-        <span>搜索</span>
+        <span class="visually-hidden">搜索</span>
         <span class="search-input-wrap">
           <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"></circle><path d="m16 16 4 4"></path></svg>
-          <input type="search" name="query" placeholder="标题、作者、任务或标签…" autocomplete="off" />
+          <input type="search" name="query" placeholder="搜索标题、作者、机构或领域…" autocomplete="off" />
         </span>
       </label>
-      <label>
-        <span>任务</span>
-        <select name="task">
-          <option value="">全部任务</option>
-          {tasks.map((task) => <option value={task}>{task}</option>)}
+
+      <details class="filter-disclosure">
+        <summary>
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>
+          <span data-filter-summary>筛选</span>
+        </summary>
+        <div class="filter-grid">
+          <label class="filter-field">
+            <span>领域</span>
+            <select name="task">
+              <option value="">全部领域</option>
+              {tasks.map((task) => <option value={task}>{task}</option>)}
+            </select>
+          </label>
+          <label class="filter-field">
+            <span>机构</span>
+            <select name="institution">
+              <option value="">全部机构</option>
+              {institutions.map((institution) => <option value={institution}>{institution}</option>)}
+            </select>
+          </label>
+          <label class="filter-field">
+            <span>年份</span>
+            <select name="year">
+              <option value="">全部年份</option>
+              {years.map((year) => <option value={year}>{year}</option>)}
+            </select>
+          </label>
+          <label class="filter-field">
+            <span>核验状态</span>
+            <select name="status">
+              <option value="">全部状态</option>
+              <option value="verified">已核验</option>
+              <option value="needs_review">待复核</option>
+              <option value="draft">草稿</option>
+            </select>
+          </label>
+          <label class="filter-field">
+            <span>证据范围</span>
+            <select name="evidenceLevel">
+              <option value="">全部证据</option>
+              <option value="fulltext">全文</option>
+              <option value="abstract">摘要</option>
+              <option value="wechat_only">公众号</option>
+              <option value="mixed">混合</option>
+            </select>
+          </label>
+        </div>
+      </details>
+
+      <label class="sort-field">
+        <span class="visually-hidden">排序</span>
+        <select name="sort" aria-label="排序">
+          <option value="newest">最新发布</option>
+          <option value="oldest">最早发布</option>
+          <option value="title">标题 A–Z</option>
         </select>
       </label>
-      <label>
-        <span>年份</span>
-        <select name="year">
-          <option value="">全部年份</option>
-          {years.map((year) => <option value={year}>{year}</option>)}
-        </select>
-      </label>
-      <label>
-        <span>状态</span>
-        <select name="status">
-          <option value="">全部状态</option>
-          <option value="verified">已核验</option>
-          <option value="needs_review">待复核</option>
-          <option value="draft">草稿</option>
-        </select>
-      </label>
-      <label>
-        <span>证据</span>
-        <select name="evidenceLevel">
-          <option value="">全部证据</option>
-          <option value="fulltext">全文</option>
-          <option value="abstract">摘要</option>
-          <option value="wechat_only">公众号</option>
-          <option value="mixed">混合</option>
-        </select>
-      </label>
-      <label>
-        <span>排序</span>
-        <select name="sort">
-          <option value="newest">发布日期：新 → 旧</option>
-          <option value="oldest">发布日期：旧 → 新</option>
-          <option value="title">英文标题：A → Z</option>
-        </select>
-      </label>
-      <button class="reset-button" type="button" data-reset-filters>清空筛选</button>
+
+      <button class="reset-button" type="button" data-reset-filters>重置</button>
     </form>
 
-    <p class="source-note"><span aria-hidden="true">※</span> 当前 3 条微信样例链接触发平台验证，已记录为待人工核验；演示卡片来自 arXiv 与官方代码仓库。</p>
+    <div class="active-filters" data-active-filters aria-label="当前筛选" hidden></div>
+
+    <p class="source-note">演示论文来自 arXiv 与官方代码仓库；微信来源仍等待人工核验。</p>
 
     <div class="paper-grid" data-paper-grid>
       {papers.map((paper, index) => <PaperCard paper={paper} index={index} />)}

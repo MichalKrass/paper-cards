@@ -11,25 +11,29 @@ const viewports = [
   { name: "desktop-1440x900", width: 1440, height: 900 },
 ];
 
-for (const viewport of viewports) {
-  test(`首页 ${viewport.name}`, async ({ page }) => {
-    await page.setViewportSize(viewport);
-    await page.goto("./");
-    await page.screenshot({ path: path.join(output, `home-${viewport.name}.png`), fullPage: true });
-  });
+const routes = [
+  { name: "home", path: "./" },
+  { name: "card", path: "papers/arxiv-2304.02643/" },
+  { name: "reading", path: "papers/arxiv-2304.02643/reading/" },
+];
 
-  test(`详情 ${viewport.name}`, async ({ page }) => {
-    await page.setViewportSize(viewport);
-    await page.goto("papers/arxiv-2304.07193/");
-    await page.screenshot({ path: path.join(output, `detail-${viewport.name}.png`), fullPage: true });
-  });
+for (const viewport of viewports) {
+  for (const route of routes) {
+    test(`${route.name} ${viewport.name}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(route.path);
+      await page.screenshot({ path: path.join(output, `${route.name}-${viewport.name}.png`), fullPage: true });
+    });
+  }
 }
 
 test("组合筛选状态", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("./");
-  await page.getByLabel("任务").selectOption("开放集目标检测");
-  await page.getByLabel("证据").selectOption("abstract");
+  await page.locator(".filter-disclosure summary").click();
+  await page.getByLabel("领域").selectOption("图像分割");
+  await page.getByLabel("机构").selectOption("Meta AI Research");
+  await page.getByLabel("证据范围").selectOption("abstract");
   await page.screenshot({ path: path.join(output, "filter-combined-desktop.png"), fullPage: true });
 });
 

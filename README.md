@@ -1,23 +1,22 @@
 # Paper Cards
 
-一个公开、移动端友好的个人论文卡片网站。首页先展示足够简洁的卡片；点击后进入完整详情，并可用浏览器的一键打印流程保存为 PDF。
+一个公开、移动端友好的个人论文阅读网站。首页先用轻量卡片建立第一印象，再进入 22 维结构化论文卡片；对已完成精读的论文，还可以按原文章节继续阅读图文总结。
 
 本项目没有数据库和后台服务。论文数据、页面代码与构建流程全部保存在同一个 GitHub 仓库中，便于审查、回滚和长期维护。
 
 ## 当前范围
 
-MVP 包含：
+V2 包含：
 
-- 卡片与详情两层阅读；
+- 论文速览、22 维论文卡片和章节精读三层阅读；
 - 中文和英文关键词搜索；
-- 任务、年份、核验状态、证据等级筛选；
+- 领域、机构、年份、核验状态、证据等级筛选；
 - 日期和标题排序；
-- 浏览器打印 / 保存 PDF；
-- JSON Schema 数据校验；
-- 单元、端到端、无障碍、视觉和 PDF 检查；
+- JSON 与章节精读 Markdown 数据校验；
+- 单元、端到端、无障碍和视觉检查；
 - GitHub Actions 构建并部署到 GitHub Pages。
 
-暂不包含登录、在线编辑、个人笔记同步、微信自动采集、语义搜索和服务端数据库。
+暂不包含 PDF 导出、登录、在线编辑、个人笔记同步、微信自动采集、语义搜索和服务端数据库。
 
 ## 样例数据说明
 
@@ -42,9 +41,8 @@ npm run dev
 npm run data:validate  # 校验论文和文章来源数据
 npm run check          # 数据、搜索索引和 Astro/TypeScript 检查
 npm run test:unit      # 搜索、筛选和排序单元测试
-npm run test:e2e       # 生产构建上的端到端与无障碍测试
-npm run test:visual    # 生成三档视口截图
-npm run test:pdf       # 检查打印样式并生成 A4 PDF
+npm run test:e2e       # 三层页面的端到端与无障碍测试
+npm run test:visual    # 为三层页面生成三档视口截图
 npm run build          # 生产构建
 npm run verify         # CI 使用的聚合验证命令
 ```
@@ -55,7 +53,7 @@ npm run verify         # CI 使用的聚合验证命令
 npx playwright install chromium
 ```
 
-## 添加一篇论文
+## 添加一篇论文卡片
 
 1. 复制 `data/papers/` 中最接近的新建卡片作为起点。
 2. 使用稳定 ID：优先 DOI，其次 arXiv ID。
@@ -66,14 +64,24 @@ npx playwright install chromium
 
 页面只读取纯文本和受控数组，不接受数据文件中的 HTML。
 
+## 添加章节精读
+
+1. 先完整阅读与核对原论文，不得用摘要推断章节内容。
+2. 新建 `content/reading-notes/<paper-id>.md`，文件名必须与论文 JSON 的 `id` 一致。
+3. 按原论文真实章节顺序使用二级标题；记录论文版本、全文来源、整理日期和复核状态。
+4. 需要图片时放入 `public/papers/<paper-id>/figures/`，同时填写替代文本、中文图注、原图编号和来源链接。
+5. 运行 `npm run data:validate`；校验会检查论文关联、完成状态、章节、图注和本地图片路径。
+
 ## 数据目录
 
 - `data/papers/`：每篇论文一个 JSON 文件，是网站内容的唯一事实源。
 - `data/articles/`：微信公众号文章来源和可访问状态。
 - `data/schema/`：两类数据的 JSON Schema。
+- `content/reading-notes/`：按原文章节组织的精读 Markdown。
+- `public/papers/`：章节精读使用的本地图表。
 - `scripts/`：构建前校验和搜索索引生成。
 - `src/`：页面、组件、样式与轻量交互。
-- `tests/`：单元、端到端、视觉与 PDF 检查。
+- `tests/`：单元、端到端、无障碍与视觉检查。
 
 ## 部署到 GitHub Pages
 
@@ -88,7 +96,7 @@ https://<你的GitHub用户名>.github.io/paper-cards/
 1. 在 GitHub 创建公开仓库 `paper-cards`，把本地内容推送到 `main` 或 `master`。
 2. 打开仓库 **Settings → Pages**，把 **Source** 设为 **GitHub Actions**。
 3. `Deploy to GitHub Pages` 工作流会先执行数据校验、类型检查、单元测试、端到端测试和生产构建；全部通过后才部署。
-4. 在 Actions 页面确认 `deploy` 任务成功，再验证首页、任一详情直链以及刷新。
+4. 在 Actions 页面确认 `deploy` 任务成功，再验证首页、论文卡片、章节精读直链以及刷新。
 
 不需要把 GitHub 密码写进代码或交给任何人。本机首次推送建议使用 `gh auth login` 的浏览器授权；GitHub Actions 部署使用仓库自带的短期令牌。
 
@@ -102,6 +110,6 @@ https://<你的GitHub用户名>.github.io/paper-cards/
 - 依赖升级异常：还原 `package.json` 与 `package-lock.json`，执行 `npm ci` 后复验。
 - 来源失效：保留来源记录，将状态改为 `removed` 或 `blocked`，并写明日期与原因。
 
-## 视觉与 PDF 产物
+## 视觉产物
 
-视觉测试把固定视口截图写入 `artifacts/visual/`；PDF 测试把代表性详情页写入 `output/pdf/paper-card-sample.pdf`。这些目录用于本地验收，截图和测试临时文件默认不提交。
+视觉测试把首页、论文卡片和章节精读在固定视口下的截图写入 `artifacts/visual/`。该目录用于本地验收，截图和测试临时文件默认不提交。

@@ -7,6 +7,7 @@ const records: SearchRecord[] = [
     id: "new",
     searchText: "分割 segment anything alexander 图像分割",
     task: "图像分割",
+    institutions: ["Meta AI"],
     year: 2023,
     status: "verified",
     evidenceLevel: "abstract",
@@ -17,6 +18,7 @@ const records: SearchRecord[] = [
     id: "old",
     searchText: "开放集 grounding dino object detection",
     task: "开放集目标检测",
+    institutions: ["IDEA Research"],
     year: 2022,
     status: "needs_review",
     evidenceLevel: "fulltext",
@@ -38,8 +40,9 @@ describe("paper filtering", () => {
   });
 
   it("combines filters with AND semantics", () => {
-    expect(filterAndSort(records, { task: "图像分割", year: "2023", evidenceLevel: "abstract" }).map((item) => item.id)).toEqual(["new"]);
+    expect(filterAndSort(records, { task: "图像分割", institution: "Meta AI", year: "2023", evidenceLevel: "abstract" }).map((item) => item.id)).toEqual(["new"]);
     expect(filterAndSort(records, { task: "图像分割", status: "needs_review" })).toEqual([]);
+    expect(filterAndSort(records, { institution: "IDEA Research" }).map((item) => item.id)).toEqual(["old"]);
   });
 
   it("supports every sorting mode without mutating expectations", () => {

@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "npm run data:prepare && astro dev",
-    "data:validate": "node scripts/validate-data.mjs",
+    "data:validate:cards": "node scripts/validate-data.mjs",
+    "data:validate:reading": "node scripts/validate-reading-notes.mjs",
+    "data:validate": "npm run data:validate:cards && npm run data:validate:reading",
     "data:index": "node scripts/build-search-index.mjs",
     "data:prepare": "npm run data:validate && npm run data:index",
     "check": "npm run data:prepare && astro check",
@@ -14,7 +16,6 @@
     "preview": "astro preview",
     "test:e2e": "npm run build && playwright test tests/e2e",
     "test:visual": "npm run build && playwright test tests/visual",
-    "test:pdf": "npm run build && playwright test tests/pdf",
     "verify": "npm run check && npm run test:unit && npm run build && playwright test tests/e2e"
   },
   "dependencies": {
