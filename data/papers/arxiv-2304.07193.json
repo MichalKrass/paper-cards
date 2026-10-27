@@ -42,7 +42,7 @@
     { "label": "arXiv 摘要与论文", "url": "https://arxiv.org/abs/2304.07193", "kind": "paper" },
     { "label": "官方代码", "url": "https://github.com/facebookresearch/dinov2", "kind": "code" }
   ],
-  "evidenceLevel": "abstract",
+  "evidenceLevel": "fulltext",
   "status": "verified",
   "oneLineSummary": "通过自动筛选的大规模图像数据和稳定的自监督训练，产出无需微调也能跨任务迁移的视觉特征。",
   "task": "视觉表征学习",
@@ -80,7 +80,7 @@
     "在专业工业图像上冻结特征与轻量微调的成本收益如何？"
   ],
   "addedAt": "2026-09-02T00:00:00.000Z",
-  "updatedAt": "2026-09-02T00:00:00.000Z",
+  "updatedAt": "2026-10-26T00:00:00.000Z",
   "schemaVersion": "1.0.0",
-  "generatedBy": "人工核对 arXiv 摘要与官方代码链接"
+  "generatedBy": "人工核对 arXiv v2 / TMLR 全文与官方代码链接"
 }

@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import JudgementValue from "../../components/JudgementValue.astro";
+import ExplainerVisual from "../../components/ExplainerVisual.astro";
 import { papers } from "../../lib/data";
+import { getPaperExplainer } from "../../lib/explainers";
 import { getReadingNoteStatus } from "../../lib/reading-notes";
 import type { Paper } from "../../lib/types";
 
@@ -15,19 +16,26 @@ interface Props {
 
 const { paper } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const explainer = getPaperExplainer(paper.id);
 const readingStatus = getReadingNoteStatus(paper.id);
 const hasReadingNote = readingStatus !== "missing";
 const evidenceLabel = {
-  fulltext: "全文",
-  abstract: "摘要",
-  wechat_only: "公众号",
+  fulltext: "论文全文",
+  abstract: "论文摘要",
+  wechat_only: "公众号文章",
   mixed: "混合证据",
 }[paper.evidenceLevel];
 const statusLabel = paper.status === "verified" ? "已核验" : paper.status === "needs_review" ? "待复核" : "草稿";
-const unknown = "未确认";
+
+const groups = [
+  { id: "orientation", number: "01", eyebrow: "WHY IT MATTERS", title: "先把问题看懂", description: "它是谁、解决什么、适合用在哪里。", dimensions: explainer.dimensions.slice(0, 7) },
+  { id: "mechanism", number: "02", eyebrow: "HOW IT WORKS", title: "方法为什么有效", description: "把结构、训练、数据和结果连成一条因果链。", dimensions: explainer.dimensions.slice(7, 14) },
+  { id: "delivery", number: "03", eyebrow: "CAN WE USE IT", title: "工程与价值判断", description: "看开源、复现、算力以及是否值得进入真实系统。", dimensions: explainer.dimensions.slice(14, 20) },
+  { id: "boundaries", number: "04", eyebrow: "WHERE IT BREAKS", title: "边界与下一步", description: "明确不能做什么，以及下一轮该验证什么。", dimensions: explainer.dimensions.slice(20, 22) },
+];
 ---
 
-<BaseLayout title={`${paper.titleZh ?? paper.title} · 论文卡片 · Paper Cards`} description={paper.oneLineSummary} pageClass="paper-card-page">
+<BaseLayout title={`${paper.titleZh ?? paper.title} · 深度论文卡片 · Paper Cards`} description={paper.oneLineSummary} pageClass="paper-card-page">
   <article class="card-detail">
     <nav class="breadcrumbs" aria-label="面包屑">
       <a href={base}>论文库</a>
@@ -39,22 +47,21 @@ const unknown = "未确认";
       <div class="card-detail-kicker">
         <span>{paper.task}</span>
         <time datetime={paper.publicationDate}>{paper.publicationDate}</time>
+        <span>{explainer.readingMinutes} 分钟读完</span>
       </div>
-      <p class="card-detail-label">STRUCTURED PAPER CARD</p>
+      <p class="card-detail-label">VISUAL PAPER EXPLAINER · 22 DIMENSIONS</p>
       <h1>{paper.title}</h1>
       {paper.titleZh && <p class="card-detail-title-zh">{paper.titleZh}</p>}
       <p class="card-detail-summary">{paper.oneLineSummary}</p>
 
       <div class="card-detail-byline">
-        <p><strong>机构</strong>{paper.institutions?.join("、") || unknown}</p>
+        <p><strong>机构</strong>{paper.institutions?.join("、") || "未确认"}</p>
         <p><strong>作者</strong>{paper.authors.join("、")}</p>
       </div>
 
       <div class="card-detail-actions">
         {hasReadingNote ? (
-          <a class="primary-action" href={`${base}papers/${paper.id}/reading/`}>
-            进入章节精读 <span aria-hidden="true">→</span>
-          </a>
+          <a class="primary-action" href={`${base}papers/${paper.id}/reading/`}>进入章节精读 <span aria-hidden="true">→</span></a>
         ) : (
           <span class="unavailable-action" aria-disabled="true">章节精读尚未生成</span>
         )}
@@ -62,78 +69,61 @@ const unknown = "未确认";
       </div>
     </header>
 
+    <section class="takeaway-panel" aria-labelledby="takeaway-title">
+      <div class="takeaway-heading">
+        <p>READ THIS FIRST</p>
+        <h2 id="takeaway-title">先记住这三点</h2>
+        <span>依据 {explainer.sourceVersion} · {evidenceLabel}</span>
+      </div>
+      <ol>
+        {explainer.takeaways.map((takeaway, index) => <li><span>{index + 1}</span><p>{takeaway}</p></li>)}
+      </ol>
+    </section>
+
     <nav class="card-section-nav" aria-label="论文卡片分组">
-      <a href="#position">基本定位</a>
-      <a href="#technical">技术与实验</a>
-      <a href="#delivery">工程与价值</a>
-      <a href="#boundaries">边界与后续</a>
+      {groups.map((group) => <a href={`#${group.id}`}>{group.title}</a>)}
     </nav>
 
-    <div class="card-groups">
-      <section id="position" class="card-group">
-        <header class="card-group-heading">
-          <span>01</span>
-          <div><p>POSITION</p><h2>基本定位</h2></div>
-        </header>
-        <dl class="dimension-grid">
-          <div class="dimension-item dimension-item--wide"><dt><span>01</span>标题</dt><dd><strong>{paper.title}</strong>{paper.titleZh && <small>{paper.titleZh}</small>}</dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>02</span>机构与作者</dt><dd><strong>{paper.institutions?.join("、") || unknown}</strong><small>{paper.authors.join("、")}</small></dd></div>
-          <div class="dimension-item"><dt><span>03</span>发布日期</dt><dd><time datetime={paper.publicationDate}>{paper.publicationDate}</time></dd></div>
-          <div class="dimension-item"><dt><span>04</span>任务</dt><dd>{paper.task}</dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>05</span>应用场景</dt><dd>{paper.applicationScenarios.length ? <ul class="chip-list">{paper.applicationScenarios.map((item) => <li>{item}</li>)}</ul> : <span class="unknown">{unknown}</span>}</dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>06</span>解决的问题</dt><dd>{paper.problem || <span class="unknown">{unknown}</span>}</dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>07</span>核心方法</dt><dd>{paper.coreMethod || <span class="unknown">{unknown}</span>}</dd></div>
-        </dl>
-      </section>
+    <div class="explain-groups">
+      {groups.map((group) => (
+        <section id={group.id} class="explain-group">
+          <header class="explain-group-heading">
+            <span>{group.number}</span>
+            <div>
+              <p>{group.eyebrow}</p>
+              <h2>{group.title}</h2>
+              <small>{group.description}</small>
+            </div>
+          </header>
 
-      <section id="technical" class="card-group">
-        <header class="card-group-heading">
-          <span>02</span>
-          <div><p>METHOD & EVIDENCE</p><h2>技术与实验</h2></div>
-        </header>
-        <dl class="dimension-grid">
-          <div class="dimension-item dimension-item--wide"><dt><span>08</span>模型结构</dt><dd>{paper.modelStructure || <span class="unknown">{unknown}</span>}</dd></div>
-          <div class="dimension-item"><dt><span>09</span>训练策略</dt><dd>{paper.trainingStrategy || <span class="unknown">{unknown}</span>}</dd></div>
-          <div class="dimension-item"><dt><span>10</span>数据配方</dt><dd>{paper.dataRecipe || <span class="unknown">{unknown}</span>}</dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>11</span>训练集与测试集</dt><dd class="dataset-pair"><div><strong>训练集</strong>{paper.trainingDatasets?.length ? <ul>{paper.trainingDatasets.map((item) => <li>{item}</li>)}</ul> : <span class="unknown">{unknown}</span>}</div><div><strong>测试集</strong>{paper.testDatasets?.length ? <ul>{paper.testDatasets.map((item) => <li>{item}</li>)}</ul> : <span class="unknown">{unknown}</span>}</div></dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>12</span>主要指标</dt><dd>{paper.keyMetrics.length ? <div class="card-metrics">{paper.keyMetrics.map((metric) => <article><h3>{metric.name}</h3><strong>{metric.result}</strong><p>{metric.baseline}</p><small>{metric.source}</small></article>)}</div> : <span class="unknown">{unknown}</span>}</dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>13</span>相对上一代方法的变化</dt><dd>{paper.changesFromPrevious || <span class="unknown">{unknown}</span>}</dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>14</span>真正有价值的创新</dt><dd>{paper.valuableInnovations.length ? <ul class="compact-list">{paper.valuableInnovations.map((item) => <li>{item}</li>)}</ul> : <span class="unknown">{unknown}</span>}</dd></div>
-        </dl>
-      </section>
-
-      <section id="delivery" class="card-group">
-        <header class="card-group-heading">
-          <span>03</span>
-          <div><p>DELIVERY & VALUE</p><h2>工程与价值</h2></div>
-        </header>
-        <dl class="dimension-grid">
-          <div class="dimension-item dimension-item--wide"><dt><span>15</span>是否开源以及开源地址</dt><dd><JudgementValue value={paper.openSourceStatus} />{paper.codeUrl && <a class="inline-source" href={paper.codeUrl} target="_blank" rel="noreferrer">查看开源代码 ↗</a>}</dd></div>
-          <div class="dimension-item"><dt><span>16</span>代码成熟度</dt><dd><JudgementValue value={paper.codeMaturity} /></dd></div>
-          <div class="dimension-item"><dt><span>17</span>复现难度</dt><dd><JudgementValue value={paper.reproductionDifficulty} /></dd></div>
-          <div class="dimension-item"><dt><span>18</span>算力需求</dt><dd><JudgementValue value={paper.computeRequirement} /></dd></div>
-          <div class="dimension-item"><dt><span>19</span>工业落地价值</dt><dd><JudgementValue value={paper.industrialValue} /></dd></div>
-          <div class="dimension-item dimension-item--wide"><dt><span>20</span>商业价值判断</dt><dd><JudgementValue value={paper.commercialValue} /></dd></div>
-        </dl>
-      </section>
-
-      <section id="boundaries" class="card-group">
-        <header class="card-group-heading">
-          <span>04</span>
-          <div><p>BOUNDARIES</p><h2>边界与后续</h2></div>
-        </header>
-        <dl class="dimension-grid">
-          <div class="dimension-item"><dt><span>21</span>局限</dt><dd>{paper.limitations.length ? <ul class="compact-list">{paper.limitations.map((item) => <li>{item}</li>)}</ul> : <span class="unknown">{unknown}</span>}</dd></div>
-          <div class="dimension-item"><dt><span>22</span>后续值得关注的问题</dt><dd>{paper.followUpQuestions.length ? <ul class="compact-list">{paper.followUpQuestions.map((item) => <li>{item}</li>)}</ul> : <span class="unknown">{unknown}</span>}</dd></div>
-        </dl>
-      </section>
+          <div class="explain-grid">
+            {group.dimensions.map((dimension) => (
+              <article
+                class:list={["explain-card", dimension.visual && "explain-card--visual", [1, 2, 3].includes(dimension.id) && "explain-card--compact"]}
+                data-dimension-id={dimension.id}
+              >
+                <header>
+                  <span>{String(dimension.id).padStart(2, "0")}</span>
+                  <h3>{dimension.label}</h3>
+                </header>
+                <p class="explain-summary">{dimension.summary}</p>
+                <ul class="explain-points">
+                  {dimension.bullets.map((bullet) => <li>{bullet}</li>)}
+                </ul>
+                {dimension.visual && <ExplainerVisual visual={dimension.visual} />}
+                {dimension.id === 15 && paper.codeUrl && <a class="explain-inline-link" href={paper.codeUrl} target="_blank" rel="noreferrer">打开官方代码仓库 ↗</a>}
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
 
     <section class="card-provenance" aria-labelledby="provenance-title">
       <div>
         <p class="card-detail-label">SOURCES & TRUST</p>
         <h2 id="provenance-title">来源与可信度</h2>
-        <p>本卡片基于{evidenceLabel}整理，当前状态为{statusLabel}。最后更新于 {paper.updatedAt.slice(0, 10)}。</p>
+        <p>本卡片按 {explainer.sourceVersion} 的 {explainer.sourceSections.join("、")} 展开，基于{evidenceLabel}整理，状态为{statusLabel}。最后更新于 {paper.updatedAt.slice(0, 10)}。</p>
       </div>
       <ul>
         {paper.sources.map((source) => <li><span>{source.kind}</span><a href={source.url} target="_blank" rel="noreferrer">{source.label} ↗</a></li>)}

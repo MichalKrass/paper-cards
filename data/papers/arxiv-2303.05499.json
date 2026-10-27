@@ -16,6 +16,7 @@
     "Jun Zhu",
     "Lei Zhang"
   ],
+  "institutions": ["清华大学", "国际数字经济研究院（IDEA）", "香港科技大学", "香港中文大学（深圳）", "Microsoft Research", "华南理工大学"],
   "publicationDate": "2023-03-09",
   "year": 2023,
   "doi": "10.48550/arXiv.2303.05499",
@@ -27,7 +28,7 @@
     { "label": "arXiv 摘要与论文", "url": "https://arxiv.org/abs/2303.05499", "kind": "paper" },
     { "label": "官方代码", "url": "https://github.com/IDEA-Research/GroundingDINO", "kind": "code" }
   ],
-  "evidenceLevel": "abstract",
+  "evidenceLevel": "fulltext",
   "status": "verified",
   "oneLineSummary": "把语言提示紧密融入 DINO 检测器，让模型按类别名或指代表达检测训练集合之外的物体。",
   "task": "开放集目标检测",
@@ -66,7 +67,7 @@
     "边缘部署中可接受的文本编码与检测延迟是多少？"
   ],
   "addedAt": "2026-09-02T00:00:00.000Z",
-  "updatedAt": "2026-09-02T00:00:00.000Z",
+  "updatedAt": "2026-10-26T00:00:00.000Z",
   "schemaVersion": "1.0.0",
-  "generatedBy": "人工核对 arXiv 摘要与官方代码链接"
+  "generatedBy": "人工核对 arXiv v5 全文与官方代码链接"
 }

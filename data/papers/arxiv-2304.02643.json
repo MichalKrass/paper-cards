@@ -29,7 +29,7 @@
     { "label": "官方代码", "url": "https://github.com/facebookresearch/segment-anything", "kind": "code" },
     { "label": "项目主页", "url": "https://segment-anything.com/", "kind": "project" }
   ],
-  "evidenceLevel": "abstract",
+  "evidenceLevel": "fulltext",
   "status": "verified",
   "oneLineSummary": "把图像分割做成可提示的基础能力，用点、框或掩码在新分布上直接产生目标区域。",
   "task": "图像分割",
@@ -67,7 +67,7 @@
     "与检测、跟踪和多模态模型组合时，误差如何传递？"
   ],
   "addedAt": "2026-09-02T00:00:00.000Z",
-  "updatedAt": "2026-09-02T00:00:00.000Z",
+  "updatedAt": "2026-10-26T00:00:00.000Z",
   "schemaVersion": "1.0.0",
-  "generatedBy": "人工核对 arXiv 摘要与官方项目链接"
+  "generatedBy": "人工核对 arXiv v1 全文与官方项目链接"
 }
