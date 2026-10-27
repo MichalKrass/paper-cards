@@ -1,19 +1,13 @@
-export type ExplainerVisualKind = "flow" | "steps" | "stats" | "bars" | "compare";
+export type OriginalAssetKind = "figure" | "table" | "equation" | "excerpt";
 
-export interface ExplainerVisualItem {
+export interface OriginalPaperAsset {
+  kind: OriginalAssetKind;
+  src: string;
   label: string;
-  value?: string;
-  note?: string;
-  score?: number;
-  max?: number;
-  tone?: "accent" | "neutral" | "good" | "warn";
-}
-
-export interface ExplainerVisual {
-  kind: ExplainerVisualKind;
-  title: string;
-  caption?: string;
-  items: ExplainerVisualItem[];
+  pdfPage: number;
+  alt: string;
+  caption: string;
+  explanation: string[];
 }
 
 export interface ExplainerDimension {
@@ -21,7 +15,7 @@ export interface ExplainerDimension {
   label: string;
   summary: string;
   bullets: string[];
-  visual?: ExplainerVisual;
+  visual?: OriginalPaperAsset;
 }
 
 export interface PaperExplainer {

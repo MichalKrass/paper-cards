@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ExplainerVisual from "../../components/ExplainerVisual.astro";
+import OriginalPaperAsset from "../../components/OriginalPaperAsset.astro";
 import { papers } from "../../lib/data";
 import { getPaperExplainer } from "../../lib/explainers";
 import { getReadingNoteStatus } from "../../lib/reading-notes";
@@ -110,7 +110,7 @@ const groups = [
                 <ul class="explain-points">
                   {dimension.bullets.map((bullet) => <li>{bullet}</li>)}
                 </ul>
-                {dimension.visual && <ExplainerVisual visual={dimension.visual} />}
+                {dimension.visual && <OriginalPaperAsset asset={dimension.visual} paperUrl={paper.paperUrl} />}
                 {dimension.id === 15 && paper.codeUrl && <a class="explain-inline-link" href={paper.codeUrl} target="_blank" rel="noreferrer">打开官方代码仓库 ↗</a>}
               </article>
             ))}

@@ -1,0 +1,45 @@
+---
+import type { OriginalPaperAsset as Asset } from "../lib/explainers";
+
+interface Props {
+  asset: Asset;
+  paperUrl?: string;
+}
+
+const { asset, paperUrl } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const imageUrl = `${base}${asset.src}`;
+const kindLabel = {
+  figure: "ORIGINAL FIGURE",
+  table: "ORIGINAL TABLE",
+  equation: "ORIGINAL EQUATION",
+  excerpt: "ORIGINAL METHOD",
+}[asset.kind];
+---
+
+<figure class={`paper-source-asset paper-source-asset--${asset.kind}`} data-original-paper-asset>
+  <header>
+    <span>{kindLabel}</span>
+    <strong>{asset.label}</strong>
+    <small>PDF p.{asset.pdfPage}</small>
+  </header>
+
+  <a class="paper-source-image" href={imageUrl} target="_blank" rel="noreferrer" aria-label={`放大查看${asset.label}`}>
+    <img src={imageUrl} alt={asset.alt} loading="eager" decoding="async" />
+    <span>点击放大 ↗</span>
+  </a>
+
+  <figcaption>
+    <p>{asset.caption}</p>
+    <div class="paper-source-reading">
+      <strong>怎么读这张原图</strong>
+      <ol>
+        {asset.explanation.map((item) => <li>{item}</li>)}
+      </ol>
+    </div>
+    <div class="paper-source-credit">
+      <span>图表截取自原论文，仅用于论文解读；版权归原作者。</span>
+      {paperUrl && <a href={paperUrl} target="_blank" rel="noreferrer">回到原论文 ↗</a>}
+    </div>
+  </figcaption>
+</figure>

@@ -37,4 +37,19 @@ describe("explainer JSON Schema", () => {
       expect.objectContaining({ keyword: "minItems" }),
     ]));
   });
+
+  it("rejects synthetic diagram kinds in original-paper asset slots", () => {
+    const ajv = new Ajv({ allErrors: true, strict: true });
+    addFormats(ajv);
+    const validate = ajv.compile(explainerSchema);
+    const invalidExplainer = structuredClone(validExplainer);
+    const dimension = invalidExplainer.dimensions.find((item) => item.visual);
+    if (!dimension?.visual) throw new Error("Fixture needs an original-paper asset.");
+    dimension.visual.kind = "flow" as typeof dimension.visual.kind;
+
+    expect(validate(invalidExplainer)).toBe(false);
+    expect(validate.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ keyword: "enum" }),
+    ]));
+  });
 });

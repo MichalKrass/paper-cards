@@ -2,7 +2,10 @@
   "paperId": "arxiv-2303.05499",
   "readingMinutes": 9,
   "sourceVersion": "arXiv v5",
-  "sourceSections": ["§3–§5", "Appendices B–C"],
+  "sourceSections": [
+    "§3–§5",
+    "Appendices B–C"
+  ],
   "takeaways": [
     "Grounding DINO 让检测器不再依赖固定类别表，而是按输入文字寻找对象。",
     "关键不是简单接一个文本编码器，而是在特征、查询初始化和解码三处持续注入语言。",
@@ -13,70 +16,80 @@
       "id": 1,
       "label": "标题",
       "summary": "标题中的“Marrying”表示把闭集检测器 DINO 与语言接地预训练真正融合。",
-      "bullets": ["Grounding 指把文本短语对应到图像中的具体框。", "DINO 是检测器基础，不是同名的自监督视觉模型 DINOv2。"]
+      "bullets": [
+        "Grounding 指把文本短语对应到图像中的具体框。",
+        "DINO 是检测器基础，不是同名的自监督视觉模型 DINOv2。"
+      ]
     },
     {
       "id": 2,
       "label": "机构与作者",
       "summary": "12 位作者来自清华、IDEA、港科大、港中深、微软研究院和华南理工。",
-      "bullets": ["团队同时具备 DETR/DINO 检测器与视觉语言预训练背景。", "论文实现以 IDEA Research 的官方仓库为主要发布入口。"]
+      "bullets": [
+        "团队同时具备 DETR/DINO 检测器与视觉语言预训练背景。",
+        "论文实现以 IDEA Research 的官方仓库为主要发布入口。"
+      ]
     },
     {
       "id": 3,
       "label": "发布日期",
       "summary": "首发于 2023-03-09，本页按 2024-07-19 的 arXiv v5 全文核对。",
-      "bullets": ["v5 补充了数据、效率、消融和更多实验细节。", "本文结论不包含后续 Grounding DINO 1.5 的 Pro/Edge 版本。"]
+      "bullets": [
+        "v5 补充了数据、效率、消融和更多实验细节。",
+        "本文结论不包含后续 Grounding DINO 1.5 的 Pro/Edge 版本。"
+      ]
     },
     {
       "id": 4,
       "label": "任务",
       "summary": "输入图像和文本，输出每个匹配对象的框、短语对应关系和置信度。",
-      "bullets": ["类别检测：文本可以是“cat . person . car .”等类别列表。", "指代表达：文本可以是“桌边穿红衣的人”等带属性描述。", "开放集指测试类别不必出现在目标数据集训练集中，不等于模型从未见过相关概念。"],
-      "visual": {
-        "kind": "flow",
-        "title": "文本如何变成检测目标",
-        "items": [
-          { "label": "图像", "tone": "neutral" },
-          { "label": "类别名 / 自然语言", "tone": "accent" },
-          { "label": "视觉—语言联合特征", "tone": "accent" },
-          { "label": "框 + 对应短语", "tone": "good" }
-        ]
-      }
+      "bullets": [
+        "类别检测：文本可以是“cat . person . car .”等类别列表。",
+        "指代表达：文本可以是“桌边穿红衣的人”等带属性描述。",
+        "开放集指测试类别不必出现在目标数据集训练集中，不等于模型从未见过相关概念。"
+      ]
     },
     {
       "id": 5,
       "label": "应用场景",
       "summary": "适合目标类别经常变化、长尾明显或需要自然语言交互的检测系统。",
-      "bullets": ["文本驱动检测：上线新类别时先改提示，不必立即重训分类头。", "自动标注：用文字找框，再接 SAM 等模型产掩码。", "机器人和检索：把自然语言目标转为可操作的空间位置。", "指代表达定位：根据属性和关系找到特定实例。"]
+      "bullets": [
+        "文本驱动检测：上线新类别时先改提示，不必立即重训分类头。",
+        "自动标注：用文字找框，再接 SAM 等模型产掩码。",
+        "机器人和检索：把自然语言目标转为可操作的空间位置。",
+        "指代表达定位：根据属性和关系找到特定实例。"
+      ]
     },
     {
       "id": 6,
       "label": "解决的问题",
       "summary": "闭集检测器只能从预定义类别表中作答，无法理解临时出现的新词和描述。",
-      "bullets": ["固定分类头把检测能力锁在训练类别里。", "只在输出端做浅层文本匹配，语言无法影响早期视觉特征和候选框生成。", "Grounding DINO 让语言贯穿 neck、query selection 和 decoder。"],
-      "visual": {
-        "kind": "compare",
-        "title": "检测器能力边界",
-        "items": [
-          { "label": "闭集 DINO", "value": "只能选固定类别", "note": "类别表写死在训练阶段", "tone": "neutral" },
-          { "label": "Grounding DINO", "value": "文字临时定义目标", "note": "输出框与短语的对应关系", "tone": "accent" }
-        ]
-      }
+      "bullets": [
+        "固定分类头把检测能力锁在训练类别里。",
+        "只在输出端做浅层文本匹配，语言无法影响早期视觉特征和候选框生成。",
+        "Grounding DINO 让语言贯穿 neck、query selection 和 decoder。"
+      ]
     },
     {
       "id": 7,
       "label": "核心方法",
       "summary": "把检测分成特征增强、查询选择和框解码三阶段，并在每一阶段加入语言条件。",
-      "bullets": ["特征增强器：图像与文本先双向交叉注意力，建立对齐语义。", "语言引导查询：从图像 token 中挑出与任一文本 token 最相关的 900 个候选。", "跨模态解码器：每层同时查看图像和文本，反复细化框与短语匹配。"],
+      "bullets": [
+        "特征增强器：图像与文本先双向交叉注意力，建立对齐语义。",
+        "语言引导查询：从图像 token 中挑出与任一文本 token 最相关的 900 个候选。",
+        "跨模态解码器：每层同时查看图像和文本，反复细化框与短语匹配。"
+      ],
       "visual": {
-        "kind": "flow",
-        "title": "三处紧耦合语言",
-        "items": [
-          { "label": "图像 + 文本编码", "tone": "neutral" },
-          { "label": "① 特征增强", "note": "双向跨模态注意力", "tone": "accent" },
-          { "label": "② 查询选择", "note": "文本挑 900 个候选", "tone": "accent" },
-          { "label": "③ 跨模态解码", "note": "看图也看词", "tone": "accent" },
-          { "label": "框 + 短语", "tone": "good" }
+        "kind": "figure",
+        "src": "papers/arxiv-2303.05499/original/figure-4.webp",
+        "label": "原论文 Figure 4",
+        "pdfPage": 6,
+        "alt": "Grounding DINO 原论文图 4：三种文本表示方式",
+        "caption": "作者选择 sub-sentence 表示：保留词级细粒度，同时阻止不同类别名互相污染。",
+        "explanation": [
+          "Sentence level 把整句压成一个表示，定位粒度不足。",
+          "Word level 让所有词彼此注意，互不相关的类别会发生串扰。",
+          "Sub-sentence 用 attention mask 隔开类别短语，仍保留每个词的表示。"
         ]
       }
     },
@@ -84,17 +97,23 @@
       "id": 8,
       "label": "模型结构",
       "summary": "它是“双编码器 + 单解码器”：Swin 编图、BERT 编词，统一解码器输出检测结果。",
-      "bullets": ["图像主干：Swin-T 或 Swin-L，多尺度特征用于大小目标。", "文本主干：BERT-base，最长 256 token。", "特征增强器和解码器各 6 层，图像交叉注意力使用 deformable attention。", "默认 900 个 query，每个 query 最终预测框并与文本 token 对齐。"],
+      "bullets": [
+        "图像主干：Swin-T 或 Swin-L，多尺度特征用于大小目标。",
+        "文本主干：BERT-base，最长 256 token。",
+        "特征增强器和解码器各 6 层，图像交叉注意力使用 deformable attention。",
+        "默认 900 个 query，每个 query 最终预测框并与文本 token 对齐。"
+      ],
       "visual": {
-        "kind": "flow",
-        "title": "双编码器、单解码器",
-        "items": [
-          { "label": "Swin 图像主干", "note": "多尺度视觉 token", "tone": "neutral" },
-          { "label": "BERT 文本主干", "note": "最多 256 token", "tone": "neutral" },
-          { "label": "6 层特征增强器", "tone": "accent" },
-          { "label": "900 个语言引导 query", "tone": "warn" },
-          { "label": "6 层跨模态解码器", "tone": "accent" },
-          { "label": "框 + 词分数", "tone": "good" }
+        "kind": "figure",
+        "src": "papers/arxiv-2303.05499/original/figure-3.webp",
+        "label": "原论文 Figure 3",
+        "pdfPage": 5,
+        "alt": "Grounding DINO 原论文图 3：完整模型框架",
+        "caption": "语言不是最后才用于分类，而是在特征、query 和 decoder 三处持续进入检测器。",
+        "explanation": [
+          "Feature enhancer：图像与文本先双向交换信息。",
+          "Language-guided query selection：文本参与选择最值得解码的候选区域。",
+          "Cross-modality decoder：每层同时读取图像特征和文本特征，输出框与短语。"
         ]
       }
     },
@@ -102,15 +121,23 @@
       "id": 9,
       "label": "训练策略",
       "summary": "把检测数据改写成短语接地任务，再混合 grounding 和伪标注 caption 数据预训练。",
-      "bullets": ["检测数据：随机拼接类别名为文本，并学习框与类别短语对齐。", "接地数据：GoldG、RefCOCO 系列直接提供短语—框关系。", "caption 数据：用 GLIP 伪标注的 4M caption 扩展新概念覆盖。", "损失同时包含框定位和文本对比，并对每层 decoder 加辅助监督。"],
+      "bullets": [
+        "检测数据：随机拼接类别名为文本，并学习框与类别短语对齐。",
+        "接地数据：GoldG、RefCOCO 系列直接提供短语—框关系。",
+        "caption 数据：用 GLIP 伪标注的 4M caption 扩展新概念覆盖。",
+        "损失同时包含框定位和文本对比，并对每层 decoder 加辅助监督。"
+      ],
       "visual": {
-        "kind": "steps",
-        "title": "三类数据统一成一种训练目标",
-        "items": [
-          { "label": "检测数据", "value": "类别名 → 短语", "note": "COCO / O365 / OI", "tone": "neutral" },
-          { "label": "接地数据", "value": "短语 ↔ 框", "note": "GoldG / RefC", "tone": "accent" },
-          { "label": "Caption 数据", "value": "伪框扩概念", "note": "Cap4M", "tone": "accent" },
-          { "label": "联合优化", "value": "定位 + 对比", "tone": "good" }
+        "kind": "excerpt",
+        "src": "papers/arxiv-2303.05499/original/loss-section.webp",
+        "label": "原论文 §3.5 Loss Function",
+        "pdfPage": 8,
+        "alt": "Grounding DINO 原论文的损失函数说明",
+        "caption": "原文没有另写一个总公式，而是明确列出三类损失及其匹配方式。",
+        "explanation": [
+          "分类：query 与文本 token 点积得到 logits，再计算 focal loss。",
+          "定位：边界框同时使用 L1 loss 与 GIoU loss。",
+          "先用同类成本做 Hungarian bipartite matching，再对匹配结果计算最终损失；每层 decoder 还有辅助损失。"
         ]
       }
     },
@@ -118,38 +145,43 @@
       "id": 10,
       "label": "数据配方",
       "summary": "数据按能力分工：检测数据学位置，接地数据学短语，caption 数据扩充长尾语义。",
-      "bullets": ["Grounding DINO-T 为公平比较使用约 60 万图的 O365v1。", "Grounding DINO-L 使用约 170 万图的 O365v2，并加入 OI、GoldG、Cap4M 等。", "加入目标数据可能提高同域分数，却损伤其他域的零样本性能；数据混合并非越多越好。"],
-      "visual": {
-        "kind": "stats",
-        "title": "训练配方中的关键规模",
-        "items": [
-          { "label": "O365v1", "value": "≈0.6M 图", "tone": "neutral" },
-          { "label": "O365v2", "value": "≈1.7M 图", "tone": "accent" },
-          { "label": "伪标注 caption", "value": "4M", "tone": "accent" },
-          { "label": "默认 query", "value": "900", "tone": "good" }
-        ]
-      }
+      "bullets": [
+        "Grounding DINO-T 为公平比较使用约 60 万图的 O365v1。",
+        "Grounding DINO-L 使用约 170 万图的 O365v2，并加入 OI、GoldG、Cap4M 等。",
+        "加入目标数据可能提高同域分数，却损伤其他域的零样本性能；数据混合并非越多越好。"
+      ]
     },
     {
       "id": 11,
       "label": "训练集与测试集",
       "summary": "训练覆盖检测、接地和 caption；测试同时检查闭集、开放集和指代表达。",
-      "bullets": ["训练：Objects365、OpenImages、GoldG、RefCOCO 系列、Cap4M，部分大模型设置还含 COCO。", "开放集：COCO、LVIS 和 35 个真实域组成的 ODinW。", "指代表达：RefCOCO、RefCOCO+、RefCOCOg。", "论文对“零样本”有严格注释：目标数据训练 split 未被使用。"]
+      "bullets": [
+        "训练：Objects365、OpenImages、GoldG、RefCOCO 系列、Cap4M，部分大模型设置还含 COCO。",
+        "开放集：COCO、LVIS 和 35 个真实域组成的 ODinW。",
+        "指代表达：RefCOCO、RefCOCO+、RefCOCOg。",
+        "论文对“零样本”有严格注释：目标数据训练 split 未被使用。"
+      ]
     },
     {
       "id": 12,
       "label": "主要指标",
       "summary": "大模型在不使用 COCO 训练数据时取得 52.5 AP，并在 ODinW 零样本达到 26.1 平均 AP。",
-      "bullets": ["COCO 零样本：Grounding DINO-L 52.5 AP。", "ODinW35 零样本：26.1 mean AP，论文发布时为新纪录。", "LVIS 零样本：大模型 33.9 AP；稀有类 AP 22.2，仍明显弱于常见类。"],
+      "bullets": [
+        "COCO 零样本：Grounding DINO-L 52.5 AP。",
+        "ODinW35 零样本：26.1 mean AP，论文发布时为新纪录。",
+        "LVIS 零样本：大模型 33.9 AP；稀有类 AP 22.2，仍明显弱于常见类。"
+      ],
       "visual": {
-        "kind": "bars",
-        "title": "三个开放集检查点",
-        "caption": "不同数据集的 AP 定义和难度不同，条形用于快速识别强弱，不用于横向排名。",
-        "items": [
-          { "label": "COCO zero-shot", "value": "52.5 AP", "score": 52.5, "max": 65, "tone": "accent" },
-          { "label": "LVIS zero-shot", "value": "33.9 AP", "score": 33.9, "max": 65, "tone": "accent" },
-          { "label": "ODinW zero-shot", "value": "26.1 mAP", "score": 26.1, "max": 65, "tone": "accent" },
-          { "label": "LVIS 稀有类", "value": "22.2 AP", "score": 22.2, "max": 65, "tone": "warn" }
+        "kind": "table",
+        "src": "papers/arxiv-2303.05499/original/table-2.webp",
+        "label": "原论文 Table 2",
+        "pdfPage": 8,
+        "alt": "Grounding DINO 原论文表 2：COCO 零样本迁移与微调结果",
+        "caption": "核心数字必须连同训练数据和是否使用 COCO 一起阅读。",
+        "explanation": [
+          "未使用 COCO 训练时，Grounding DINO L 的零样本 AP 为 52.5。",
+          "同表中 GLIP-L 为 49.8，DINO(Swin-T) 为 46.2。",
+          "加入 COCO 与 RefCOCO 后的 60.7 不再是真正零样本，不能混为一谈。"
         ]
       }
     },
@@ -157,13 +189,22 @@
       "id": 13,
       "label": "相对上一代方法的变化",
       "summary": "相对 DINO，它把固定分类头替换成文本条件，并把语言提前注入候选生成过程。",
-      "bullets": ["DINO 的 query 只由视觉初始化；Grounding DINO 用文本相关性选择 query。", "DINO decoder 只跨注意图像；新 decoder 每层额外跨注意文本。", "相对 GLIP 等方法，它在检测器三个阶段都做融合，耦合更紧。"],
+      "bullets": [
+        "DINO 的 query 只由视觉初始化；Grounding DINO 用文本相关性选择 query。",
+        "DINO decoder 只跨注意图像；新 decoder 每层额外跨注意文本。",
+        "相对 GLIP 等方法，它在检测器三个阶段都做融合，耦合更紧。"
+      ],
       "visual": {
-        "kind": "compare",
-        "title": "从闭集 DINO 到 Grounding DINO",
-        "items": [
-          { "label": "DINO", "value": "图像 → query → 固定类别", "note": "文本不参与候选生成", "tone": "neutral" },
-          { "label": "Grounding DINO", "value": "图文融合 → 语言选 query → 短语匹配", "note": "语言贯穿三个阶段", "tone": "accent" }
+        "kind": "figure",
+        "src": "papers/arxiv-2303.05499/original/figure-5.webp",
+        "label": "原论文 Figure 5",
+        "pdfPage": 23,
+        "alt": "Grounding DINO 原论文图 5：相对 DINO 的改动",
+        "caption": "蓝色部分就是从闭集 DINO 变成开放词汇检测器所增加的语言通路。",
+        "explanation": [
+          "DINO 原有的图像 backbone 与 decoder 主体仍被保留。",
+          "新增文本 backbone、特征融合与语言引导 query。",
+          "decoder 内加入 text cross-attention，预测框的同时对齐文本 token。"
         ]
       }
     },
@@ -171,63 +212,107 @@
       "id": 14,
       "label": "真正有价值的创新",
       "summary": "最有价值的是语言引导候选生成，而不是检测后再给框贴文本标签。",
-      "bullets": ["去掉 encoder 融合，LVIS 零样本从 16.1 降到 13.1 AP。", "改为静态 query，LVIS 零样本下降 2.5 AP。", "去掉 decoder 文本交叉注意力，LVIS 零样本下降 1.8 AP。", "消融说明三处融合均有作用，且长尾数据受益更明显。"]
+      "bullets": [
+        "去掉 encoder 融合，LVIS 零样本从 16.1 降到 13.1 AP。",
+        "改为静态 query，LVIS 零样本下降 2.5 AP。",
+        "去掉 decoder 文本交叉注意力，LVIS 零样本下降 1.8 AP。",
+        "消融说明三处融合均有作用，且长尾数据受益更明显。"
+      ],
+      "visual": {
+        "kind": "figure",
+        "src": "papers/arxiv-2303.05499/original/figure-7.webp",
+        "label": "原论文 Figure 7",
+        "pdfPage": 25,
+        "alt": "Grounding DINO 原论文图 7：不同文本提示改变 query 分布",
+        "caption": "query 不是固定的通用候选；输入 building、river 或 ferris wheel 时，关注区域随语言改变。",
+        "explanation": [
+          "红框显示被选中的高分 query。",
+          "提示词改变后，密集关注区域随目标语义移动。",
+          "这为 language-guided query selection 提供了直观证据。"
+        ]
+      }
     },
     {
       "id": 15,
       "label": "是否开源以及开源地址",
       "summary": "官方仓库公开推理代码、部分配置和权重，但原论文完整训练代码并未全部开放。",
-      "bullets": ["官方入口：github.com/IDEA-Research/GroundingDINO。", "可直接运行文本提示检测，并与 SAM、Stable Diffusion 等工具组合。", "若要完整复现预训练，需参考后续社区实现并重新核对数据许可。"]
+      "bullets": [
+        "官方入口：github.com/IDEA-Research/GroundingDINO。",
+        "可直接运行文本提示检测，并与 SAM、Stable Diffusion 等工具组合。",
+        "若要完整复现预训练，需参考后续社区实现并重新核对数据许可。"
+      ]
     },
     {
       "id": 16,
       "label": "代码成熟度",
       "summary": "推理生态成熟，训练复现成熟度低于 SAM 和 DINOv2。",
-      "bullets": ["官方仓库提供安装、Demo、权重和常见集成。", "社区已有 Hugging Face、MMDetection 等实现，降低使用门槛。", "原始大规模数据混合、训练脚本和所有超参数并未完整公开。"]
+      "bullets": [
+        "官方仓库提供安装、Demo、权重和常见集成。",
+        "社区已有 Hugging Face、MMDetection 等实现，降低使用门槛。",
+        "原始大规模数据混合、训练脚本和所有超参数并未完整公开。"
+      ]
     },
     {
       "id": 17,
       "label": "复现难度",
       "summary": "使用权重中等难度；重建论文预训练属于高难度。",
-      "bullets": ["推理需要同时处理文本 token、图像多尺度特征和阈值策略。", "业务评测必须设计真实提示词与同义词集合，否则结果会被 prompt 选择左右。", "训练依赖多源接地数据、伪标注 caption 和大规模分布式硬件。"]
+      "bullets": [
+        "推理需要同时处理文本 token、图像多尺度特征和阈值策略。",
+        "业务评测必须设计真实提示词与同义词集合，否则结果会被 prompt 选择左右。",
+        "训练依赖多源接地数据、伪标注 caption 和大规模分布式硬件。"
+      ]
     },
     {
       "id": 18,
       "label": "算力需求",
       "summary": "小模型训练用 16 张 V100；大模型训练用 64 张 A100，推理也明显重于普通闭集检测器。",
-      "bullets": ["Grounding DINO-T：Swin-T，总 batch 32，16×V100。", "Grounding DINO-L：Swin-L，总 batch 64，64×A100。", "BERT、900 queries 和六层跨模态模块增加显存与延迟；边缘端需剪枝、量化或后续轻量版本。"],
-      "visual": {
-        "kind": "compare",
-        "title": "论文两种训练量级",
-        "items": [
-          { "label": "Tiny", "value": "16×V100 · batch 32", "note": "Swin-T，较适合研究与集成", "tone": "good" },
-          { "label": "Large", "value": "64×A100 · batch 64", "note": "Swin-L，追求零样本上限", "tone": "warn" }
-        ]
-      }
+      "bullets": [
+        "Grounding DINO-T：Swin-T，总 batch 32，16×V100。",
+        "Grounding DINO-L：Swin-L，总 batch 64，64×A100。",
+        "BERT、900 queries 和六层跨模态模块增加显存与延迟；边缘端需剪枝、量化或后续轻量版本。"
+      ]
     },
     {
       "id": 19,
       "label": "工业落地价值",
       "summary": "高：文字直接定义检测目标，特别适合长尾类别和快速扩类。",
-      "bullets": ["减少每新增一个类别就收集框标注、改分类头和重训的周期。", "可作为自动标注、机器人感知和视觉内容审核的候选生成器。", "上线必须建立 prompt 词表、置信度校准和误检回收机制。"]
+      "bullets": [
+        "减少每新增一个类别就收集框标注、改分类头和重训的周期。",
+        "可作为自动标注、机器人感知和视觉内容审核的候选生成器。",
+        "上线必须建立 prompt 词表、置信度校准和误检回收机制。"
+      ]
     },
     {
       "id": 20,
       "label": "商业价值判断",
       "summary": "价值来自“用语言配置视觉能力”，能缩短需求到可用原型的时间。",
-      "bullets": ["新 SKU、新缺陷或新内容类别可先用提示覆盖，再决定是否专项训练。", "与 SAM 组合可形成低标注成本的框—掩码生产线。", "公开模型易获得，真正壁垒在行业词汇、校准数据和闭环运营。"]
+      "bullets": [
+        "新 SKU、新缺陷或新内容类别可先用提示覆盖，再决定是否专项训练。",
+        "与 SAM 组合可形成低标注成本的框—掩码生产线。",
+        "公开模型易获得，真正壁垒在行业词汇、校准数据和闭环运营。"
+      ]
     },
     {
       "id": 21,
       "label": "局限",
       "summary": "开放词汇能力仍受训练概念覆盖、语言歧义和长尾分布限制。",
-      "bullets": ["LVIS 稀有类明显弱于常见类，说明开放集不等于长尾问题已解决。", "RefCOCO 不加入训练时，细粒度指代表达成绩较低。", "加入 RefC/COCO 会提高同域指标，却可能降低 LVIS 和 ODinW 零样本表现。", "原论文训练代码不完整，复现和许可审查成本较高。"]
+      "bullets": [
+        "LVIS 稀有类明显弱于常见类，说明开放集不等于长尾问题已解决。",
+        "RefCOCO 不加入训练时，细粒度指代表达成绩较低。",
+        "加入 RefC/COCO 会提高同域指标，却可能降低 LVIS 和 ODinW 零样本表现。",
+        "原论文训练代码不完整，复现和许可审查成本较高。"
+      ]
     },
     {
       "id": 22,
       "label": "后续值得关注的问题",
       "summary": "重点应放在置信度校准、细粒度语言、边缘速度和跨域稳定性。",
-      "bullets": ["提示词换成同义词、属性或否定表达时，结果是否稳定？", "如何让罕见类置信度可校准，并减少文本相近类别之间的误检？", "与 SAM 串联后，框错误如何被识别而不是继续放大？", "轻量模型能否在边缘端保留开放集能力和可接受延迟？"]
+      "bullets": [
+        "提示词换成同义词、属性或否定表达时，结果是否稳定？",
+        "如何让罕见类置信度可校准，并减少文本相近类别之间的误检？",
+        "与 SAM 串联后，框错误如何被识别而不是继续放大？",
+        "轻量模型能否在边缘端保留开放集能力和可接受延迟？"
+      ]
     }
   ]
 }

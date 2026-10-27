@@ -44,28 +44,20 @@
     "visual": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "title", "items"],
+      "required": ["kind", "src", "label", "pdfPage", "alt", "caption", "explanation"],
       "properties": {
-        "kind": { "enum": ["flow", "steps", "stats", "bars", "compare"] },
-        "title": { "type": "string", "minLength": 2 },
-        "caption": { "type": "string" },
-        "items": {
+        "kind": { "enum": ["figure", "table", "equation", "excerpt"] },
+        "src": { "type": "string", "pattern": "^papers/[a-z0-9._-]+/original/[a-z0-9._-]+\\.webp$" },
+        "label": { "type": "string", "minLength": 4 },
+        "pdfPage": { "type": "integer", "minimum": 1 },
+        "alt": { "type": "string", "minLength": 8 },
+        "caption": { "type": "string", "minLength": 8 },
+        "explanation": {
           "type": "array",
           "minItems": 2,
-          "maxItems": 8,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["label"],
-            "properties": {
-              "label": { "type": "string", "minLength": 1 },
-              "value": { "type": "string" },
-              "note": { "type": "string" },
-              "score": { "type": "number", "minimum": 0 },
-              "max": { "type": "number", "exclusiveMinimum": 0 },
-              "tone": { "enum": ["accent", "neutral", "good", "warn"] }
-            }
-          }
+          "maxItems": 4,
+          "items": { "type": "string", "minLength": 8 },
+          "uniqueItems": true
         }
       }
     }

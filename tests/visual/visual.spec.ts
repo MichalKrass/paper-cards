@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { test } from "@playwright/test";
+import { test, type Page } from "@playwright/test";
 
 const output = path.resolve("artifacts/visual");
 fs.mkdirSync(output, { recursive: true });
@@ -17,11 +17,33 @@ const routes = [
   { name: "reading", path: "papers/arxiv-2304.02643/reading/" },
 ];
 
+async function waitForImages(page: Page) {
+  await page.locator("img").evaluateAll(async (images) => {
+    await Promise.all(
+      images.map(async (image) => {
+        const htmlImage = image as HTMLImageElement;
+
+        if (!htmlImage.complete) {
+          await new Promise<void>((resolve) => {
+            htmlImage.addEventListener("load", () => resolve(), { once: true });
+            htmlImage.addEventListener("error", () => resolve(), { once: true });
+          });
+        }
+
+        if (htmlImage.naturalWidth > 0) {
+          await htmlImage.decode().catch(() => undefined);
+        }
+      }),
+    );
+  });
+}
+
 for (const viewport of viewports) {
   for (const route of routes) {
     test(`${route.name} ${viewport.name}`, async ({ page }) => {
       await page.setViewportSize(viewport);
       await page.goto(route.path);
+      await waitForImages(page);
       await page.screenshot({ path: path.join(output, `${route.name}-${viewport.name}.png`), fullPage: true });
     });
   }
@@ -34,6 +56,7 @@ for (const route of [
   test(`${route.name} desktop-1440x900`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(route.path);
+    await waitForImages(page);
     await page.screenshot({ path: path.join(output, `${route.name}-desktop-1440x900.png`), fullPage: true });
   });
 }

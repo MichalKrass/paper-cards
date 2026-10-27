@@ -66,9 +66,9 @@ test("第二层严格显示22个维度，未生成章节时不出现无效链接
   const labels = await page.locator("[data-dimension-id] h3").allTextContents();
   expect(labels).toEqual(dimensionLabels);
   await expect(page.locator("[data-dimension-id]")).toHaveCount(22);
-  await expect(page.locator(".explain-visual")).toHaveCount(9);
+  await expect(page.locator("[data-original-paper-asset]")).toHaveCount(8);
   await expect(page.getByRole("heading", { name: "先记住这三点" })).toBeVisible();
-  await expect(page.getByText("一次重编码，多次轻交互")).toBeVisible();
+  await expect(page.getByText("原论文 Figure 4")).toBeVisible();
   await expect(page.getByRole("link", { name: /进入章节精读/ })).toHaveAttribute("href", "/paper-cards/papers/arxiv-2304.02643/reading/");
   await expect(page.getByRole("link", { name: /打开原论文/ })).toHaveAttribute("href", "https://arxiv.org/abs/2304.02643");
 
@@ -76,11 +76,11 @@ test("第二层严格显示22个维度，未生成章节时不出现无效链接
   await expect(page.getByText("章节精读尚未生成")).toBeVisible();
   await expect(page.getByRole("link", { name: /进入章节精读/ })).toHaveCount(0);
   await expect(page.locator("[data-dimension-id]")).toHaveCount(22);
-  await expect(page.getByText("DINOv2 的完整生产线")).toBeVisible();
+  await expect(page.getByText("原论文 §4 的 DINO 与 iBOT 公式")).toBeVisible();
 
   await page.goto("papers/arxiv-2303.05499/");
   await expect(page.locator("[data-dimension-id]")).toHaveCount(22);
-  await expect(page.getByText("三处紧耦合语言")).toBeVisible();
+  await expect(page.getByText("原论文 Figure 3")).toBeVisible();
 });
 
 test("第一层到第三层及返回路径、章节目录与原图均可用", async ({ page }) => {
@@ -124,14 +124,17 @@ test("手机三层页面没有整页横向溢出", async ({ page }) => {
   }
 });
 
-test("框图与图表包含可读文字而非纯装饰", async ({ page }) => {
+test("第二层只使用带来源说明的原论文图表和公式", async ({ page }) => {
   for (const path of ["papers/arxiv-2304.02643/", "papers/arxiv-2304.07193/", "papers/arxiv-2303.05499/"]) {
     await page.goto(path);
-    const visuals = page.locator(".explain-visual");
-    expect(await visuals.count()).toBeGreaterThanOrEqual(7);
-    for (const visual of await visuals.all()) {
-      await expect(visual.locator("figcaption")).toHaveText(/\S/);
-      await expect(visual).not.toHaveAttribute("aria-label", "");
+    await expect(page.locator(".explain-visual")).toHaveCount(0);
+    const assets = page.locator("[data-original-paper-asset]");
+    expect(await assets.count()).toBeGreaterThanOrEqual(6);
+    for (const asset of await assets.all()) {
+      await expect(asset.locator("figcaption")).toContainText("怎么读这张原图");
+      await expect(asset.locator("img")).toHaveAttribute("src", /\/original\/.+\.webp$/);
+      await expect(asset.locator("img")).not.toHaveAttribute("alt", "");
+      await expect(asset.getByRole("link", { name: /回到原论文/ })).toHaveAttribute("href", /^https:\/\/arxiv\.org\/abs\//);
     }
   }
 });

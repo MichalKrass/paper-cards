@@ -93,6 +93,21 @@ for (const file of explainerFiles) {
     failures += 1;
     console.error(`\n${relative} dimension labels must exactly match 论文卡片格式.txt.`);
   }
+
+  for (const dimension of explainer.dimensions ?? []) {
+    const asset = dimension.visual;
+    if (!asset) continue;
+    if (!asset.src.startsWith(`papers/${explainer.paperId}/original/`)) {
+      failures += 1;
+      console.error(`\n${relative} dimension ${dimension.id} asset must stay inside its paper's original asset directory.`);
+      continue;
+    }
+    const assetPath = path.join(root, "public", asset.src);
+    if (!fs.existsSync(assetPath)) {
+      failures += 1;
+      console.error(`\n${relative} dimension ${dimension.id} references missing original-paper asset: ${asset.src}`);
+    }
+  }
 }
 
 for (const paperId of paperIds) {
